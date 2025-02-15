@@ -1,0 +1,32 @@
+# 忽略 Go 编译的二进制文件和临时文件
+bin/
+obj/
+*.exe
+*.out
+*.log
+*.dmg
+temp/
+# 忽略 Node.js 的依赖和构建文件
+node_modules/
+dist/
+build/
+package-lock.json
+yarn.lock
+
+# 忽略本地 IDE 或编辑器生成的文件
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略 Go 的测试覆盖率文件
+*.coverprofile
+*.out
+
+# 忽略 Wails 特定的构建文件（如果有）
+wails.json
+sqlite.db
