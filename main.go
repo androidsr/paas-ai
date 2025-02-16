@@ -32,7 +32,7 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:  "那个谁AI桌面端",
 		Width:  1100,
-		Height: 619,
+		Height: 700,
 		//HideWindowOnClose: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,

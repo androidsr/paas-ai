@@ -88,7 +88,7 @@ export default {
   data() {
     return {
       config: {},
-      selectedKey: "/aiChat",
+      selectedKey: "/aichat",
       menus: [],
     };
   },

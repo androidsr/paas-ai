@@ -30,3 +30,4 @@ Thumbs.db
 # 忽略 Wails 特定的构建文件（如果有）
 wails.json
 sqlite.db
+data/
