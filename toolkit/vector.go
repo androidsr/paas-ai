@@ -14,7 +14,7 @@ var (
 )
 
 func Init(config *dv.Config) {
-	db, _ = chromem.NewPersistentDB("./db", false)
+	db, _ = chromem.NewPersistentDB("./data", false)
 	var normalized = new(bool)
 	*normalized = true
 	embeddingFunc = chromem.NewEmbeddingFuncOpenAICompat(config.EmbeddingUrl, config.EmbeddingToken, config.EmbeddingModel, normalized)
