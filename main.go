@@ -32,14 +32,13 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:  "那个谁AI桌面端",
 		Width:  1100,
-		Height: 700,
+		Height: 619,
 		//HideWindowOnClose: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 255, G: 255, B: 255, A: 1},
 		OnStartup:        app.startup,
-		Menu:             app.AddMenus(),
 		Bind: []interface{}{
 			app,
 			dbBiz,

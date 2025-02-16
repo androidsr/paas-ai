@@ -22,6 +22,8 @@
                                 <div>
                                     <strong>作者：</strong> 那个谁
                                     <br />
+                                    <strong>微信号：</strong> scrqrr
+                                    <br />
                                     <strong>邮箱：</strong> srandroid@163.com
                                 </div>
                                 <a-image :src="imageSrc" width="150px" height="150px" alt="扫码增加微信好友"

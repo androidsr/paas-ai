@@ -14,34 +14,44 @@
     },
   }">
     <a-layout>
-      <!-- <a-layout-sider :style="{ minHeight: '100vh' }">
-        <a-menu mode="inline" @click="menuClick" theme="dark" :selectedKeys="[selectedKey]" v-show="$store.isAbout">
-          <a-menu-item key="/aiChat">
-            <HomeOutlined />&nbsp;&nbsp;AI对话
+      <a-layout-sider :style="{ minHeight: '100vh' }" :trigger="null" :collapsed="true" :collapsible="true"
+        :collapsedWidth="46" theme="light">
+        <a-menu :style="{ minHeight: '100vh' }" mode="inline" @click="menuClick" theme="light" :selectedKeys="[selectedKey]" v-show="$store.isAbout">
+          <a-menu-item key="/aichat">
+            <CommentOutlined />&nbsp;&nbsp;&nbsp;AI对话
           </a-menu-item>
           <a-menu-item key="/prompt">
-            <FieldTimeOutlined />&nbsp;&nbsp;提示词管理
+            <IdcardOutlined />&nbsp;&nbsp;&nbsp;提示词管理
           </a-menu-item>
-          <a-menu-item key="/knowledge">
-            <OrderedListOutlined />&nbsp;&nbsp;知识库管理
+          <a-menu-item key="/collection">
+            <ProfileOutlined />&nbsp;&nbsp;&nbsp;集合管理
+          </a-menu-item>
+          <a-menu-item key="/document">
+            <FileWordOutlined />&nbsp;&nbsp;&nbsp;文档管理
           </a-menu-item>
           <a-menu-item key="/function">
-            <DatabaseOutlined />&nbsp;&nbsp;函数管理
+            <FunctionOutlined />&nbsp;&nbsp;&nbsp;函数定义
           </a-menu-item>
-          <a-menu-item key="/database">
-            <DatabaseOutlined />&nbsp;&nbsp;数据库管理
+          <a-menu-item key="/func-impl">
+            <ApiOutlined />&nbsp;&nbsp;&nbsp;函数实现
+          </a-menu-item>
+          <a-menu-item key="/dbconfig">
+            <ConsoleSqlOutlined />&nbsp;&nbsp;&nbsp;数据库管理
           </a-menu-item>
           <a-menu-item key="/flow">
-            <DatabaseOutlined />&nbsp;&nbsp;流程管理
+            <ApartmentOutlined />&nbsp;&nbsp;&nbsp;流程管理
+          </a-menu-item>
+          <a-menu-item key="/aichannel">
+            <CloudOutlined />&nbsp;&nbsp;&nbsp;渠道管理
           </a-menu-item>
           <a-menu-item key="/config">
-            <SettingOutlined />&nbsp;&nbsp;设置
+            <SettingOutlined />&nbsp;&nbsp;&nbsp;设置
           </a-menu-item>
           <a-menu-item key="/about">
-            <InfoCircleOutlined />&nbsp;&nbsp;关于
+            <InfoCircleOutlined />&nbsp;&nbsp;&nbsp;关于
           </a-menu-item>
         </a-menu>
-      </a-layout-sider> -->
+      </a-layout-sider>
       <a-layout>
         <a-layout-content style="background-color: white;padding: 10px;">
           <router-view></router-view>

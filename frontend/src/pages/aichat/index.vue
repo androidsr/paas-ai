@@ -1,7 +1,7 @@
 <template>
   <div style="padding-left:8px;background-color: white;">
     <a-row :gutter="16">
-      <a-col :span="5" style="border: 1px solid #e9e9e9;overflow: auto;height: 95vh;" class="no-scrollbar">
+      <a-col :span="5" style="border: 1px solid #e9e9e9;overflow: auto;height: 96vh;" class="no-scrollbar">
         <a-tabs v-model:activeKey="selected">
           <a-tab-pane key="chatConfig" tab="对话设置"></a-tab-pane>
           <a-tab-pane key="modelConfig" tab="模型设置"></a-tab-pane>
@@ -82,10 +82,13 @@
 
       <a-col :span="19">
         <a-row>
-          <div :style="'height:' + height + 'px;width:100%;'">
+          <div :style="'width:100%;height:100%;border: 1px solid #e9e9e9;'">
             <md-preview :modelValue="result">
             </md-preview>
-
+          </div>
+        </a-row>
+        <a-row>
+          <a-col>
             <a-space style="padding-top:10px;" size="middle">
               <a-popover placement="bottomRight">
                 <template #content>
@@ -106,17 +109,13 @@
               <a-button size="small" @click="clean" title="清空对话">
                 <ClearOutlined />
               </a-button>
-
-              <!-- <a>
-                <PlayCircleOutlined style="color:blue" />
-              </a> -->
             </a-space>
-          </div>
+          </a-col>
         </a-row>
-        <a-row>
-          <a-col :flex="1" style="margin-right: 10px;">
-            <a-input type="text" placeholder="Enter发送" v-model:value="message" @keyup.enter="sendMessage"
-              :loading="loadingSend" style="width:100%;" />
+        <a-row style="margin-top: 10px;">
+          <a-col :flex="1">
+            <a-textarea type="text" placeholder="Enter发送" rows="3" v-model:value="message" @keydown.enter.prevent="sendMessage"
+              :loading="loadingSend" style="resize: none; " />
           </a-col>
         </a-row>
       </a-col>
@@ -459,7 +458,7 @@ export default {
     },
     handleResize() {
       this.width = document.documentElement.clientWidth - 16;
-      this.height = document.documentElement.clientHeight - 64;
+      this.height = document.documentElement.clientHeight - 139;
     },
     sourceChange(data) {
       if (data.value == "2") {
@@ -577,6 +576,6 @@ export default {
 }
 
 .md-editor {
-  height: 82vh;
+  height: 78vh;
 }
 </style>
