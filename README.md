@@ -3,13 +3,12 @@
 ## 概述
 
 本软件是一款高度集成的AI客户端，采用Wails框架结合Ant Design Vue进行开发。软件的最大特点是仅需一个exe文件即可运行，无需安装任何额外的环境，极大地方便了用户的使用。软件支持多种对话功能，包括AI对话、文件对话、数据库对话、图像对话等，同时具备提示词管理、本地知识库管理、函数调用等功能，并能够调用任何兼容OpenAI接口的AI平台。此外，软件支持本地化部署运行，是目前最轻量级的AI客户端。
-![image](https://github.com/user-attachments/assets/4138d72a-dfed-4a06-a762-03425f91a786)
-
-![image](https://github.com/user-attachments/assets/59c956e5-fd18-40e1-baf7-11b8bb04e8b9)
-
-![image](https://github.com/user-attachments/assets/0ca92d26-bfb5-4fc6-acae-79381f4a8c76)
-
-![image](https://github.com/user-attachments/assets/ac9d441e-9fe0-4bf1-b91c-560457d22c59)
+![image](https://github.com/user-attachments/assets/d0f0808f-4e4f-4135-a81a-5c53558b9f66)
+![image](https://github.com/user-attachments/assets/4b55de14-c1ac-41e2-8cd2-1b8e1bf41d77)
+![image](https://github.com/user-attachments/assets/aaf5862c-2fed-4824-b87e-517ed1238e89)
+![image](https://github.com/user-attachments/assets/ff4f9665-59a5-4f4b-a1ad-12929e7cbd76)
+![image](https://github.com/user-attachments/assets/1213df57-01d1-4800-9cb5-3cf59d610f53)
+![image](https://github.com/user-attachments/assets/df09c1f5-72e1-4e18-8399-c080e62ca1df)
 
 ## 主要功能
 
