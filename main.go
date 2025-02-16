@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"paas-ai/biz"
-	"paas-ai/toolkit"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -15,9 +14,9 @@ import (
 var assets embed.FS
 
 func main() {
-	if !toolkit.Signature("10-F6-0A-AD-A3-81,04-42-1A-D7-FE-8B", "2025-03-01") {
+	/* if !toolkit.Signature("10-F6-0A-AD-A3-81,04-42-1A-D7-FE-8B", "2025-03-01") {
 		return
-	}
+	} */
 	dbBiz := biz.NewDbConfigBiz()
 	fwBiz := biz.NewFwConfigBiz()
 	functionBiz := biz.NewFunctionBiz()
