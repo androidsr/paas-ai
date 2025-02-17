@@ -10,3 +10,5 @@ export function GetConfig():Promise<model.HttpResult>;
 export function GoToPage(arg1:string):Promise<void>;
 
 export function SetConfig(arg1:entity.Config):Promise<model.HttpResult>;
+
+export function SetMode(arg1:number):Promise<void>;

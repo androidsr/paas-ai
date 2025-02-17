@@ -17,3 +17,7 @@ export function GoToPage(arg1) {
 export function SetConfig(arg1) {
   return window['go']['main']['App']['SetConfig'](arg1);
 }
+
+export function SetMode(arg1) {
+  return window['go']['main']['App']['SetMode'](arg1);
+}

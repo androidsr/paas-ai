@@ -8,11 +8,14 @@ import (
 
 	"github.com/androidsr/sc-go/mapper"
 	"github.com/androidsr/sc-go/model"
+	"github.com/wailsapp/wails/v2/pkg/menu"
+	"github.com/wailsapp/wails/v2/pkg/menu/keys"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type App struct {
-	ctx context.Context
+	ctx      context.Context
+	modeType int
 }
 
 func NewApp() *App {
@@ -21,6 +24,7 @@ func NewApp() *App {
 
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	a.modeType = 1
 }
 
 func (a *App) Close() {
@@ -56,4 +60,19 @@ func (a *App) GetConfig() model.HttpResult {
 // 前端路由页面跳转
 func (a *App) GoToPage(page string) {
 	runtime.EventsEmit(a.ctx, "go-to-page", page)
+}
+
+// 前端路由页面跳转
+func (a *App) SetMode(modeType int) {
+	a.modeType = modeType
+	if a.modeType == 2 {
+		AppMenu := menu.NewMenu()
+		item := AppMenu.AddSubmenu("切换模式")
+		item.AddText("返回", keys.CmdOrCtrl("1"), func(cd *menu.CallbackData) {
+			runtime.WindowReloadApp(a.ctx)
+		})
+		runtime.MenuSetApplicationMenu(a.ctx, AppMenu)
+	} else {
+		runtime.MenuSetApplicationMenu(a.ctx, menu.NewMenu())
+	}
 }

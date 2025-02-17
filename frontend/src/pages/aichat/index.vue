@@ -175,6 +175,7 @@ export default {
     });
   },
   mounted() {
+    //window.location.href = "https://yuanbao.tencent.com/chat/naQivTmsDa";
     this.result = this.$store.chats.result;
     this.clipboard = new Clipboard(this.$refs.copyBtn, {
       text: () => this.$store.chats.result || "",
@@ -280,11 +281,14 @@ export default {
       Get(channelId).then(res => {
         if (res.code == 200) {
           this.models = [];
-          this.channel = res.data;
-          this.channel.models.split(",").forEach(item => {
+          this.$store.setChannel(res.data);
+          console.log(this.$store.channel)
+
+          this.$store.channel.models.split(",").forEach(item => {
             this.models.push({ label: item, value: item });
           });
           this.model = this.models[0].value;
+
         } else {
           this.$message.error("获取设置失败！");
         }

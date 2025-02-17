@@ -10,6 +10,9 @@
                 <a-form-item label="接口地址" name="url">
                     <a-input v-model:value="model.url" :readonly="isReadOnly" />
                 </a-form-item>
+                <a-form-item label="网页地址" name="originalUrl">
+                    <a-input v-model:value="model.originalUrl" :readonly="isReadOnly" />
+                </a-form-item>
                 <a-form-item label="认证Token" name="token">
                     <a-input v-model:value="model.token" :readonly="isReadOnly" />
                 </a-form-item>

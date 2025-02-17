@@ -61,11 +61,12 @@ type Document struct {
 
 type AiChannel struct {
 	BaseEntity
-	Name     string `json:"name" gorm:"column:name"`
-	Url      string `json:"url" gorm:"column:url"`
-	Token    string `json:"token" gorm:"column:token"`
-	MaxToken int    `json:"maxToken" gorm:"column:max_token"`
-	Models   string `json:"models" gorm:"column:models"`
-	Priority int    `json:"priority" gorm:"column:priority"`
-	Remark   string `json:"remark" gorm:"column:remark"`
+	Name        string `json:"name" gorm:"column:name"`
+	Url         string `json:"url" gorm:"column:url"`
+	Token       string `json:"token" gorm:"column:token"`
+	MaxToken    int    `json:"maxToken" gorm:"column:max_token"`
+	Models      string `json:"models" gorm:"column:models"`
+	Priority    int    `json:"priority" gorm:"column:priority"`
+	Remark      string `json:"remark" gorm:"column:remark"`
+	OriginalUrl string `json:"originalUrl" gorm:"column:original_url"`
 }

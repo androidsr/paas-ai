@@ -273,6 +273,7 @@ export namespace entity {
 	    models: string;
 	    priority: number;
 	    remark: string;
+	    originalUrl: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new AiChannel(source);
@@ -288,6 +289,7 @@ export namespace entity {
 	        this.models = source["models"];
 	        this.priority = source["priority"];
 	        this.remark = source["remark"];
+	        this.originalUrl = source["originalUrl"];
 	    }
 	}
 	export class Config {

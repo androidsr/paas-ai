@@ -25,6 +25,8 @@ const useStore = defineStore('store', {
             pageSize: 10,
             uploadFileId: "",
         },
+        modeType: "1",
+        channel: null,
         isAbout: true,
         loading: true,
         forms: {
@@ -39,6 +41,12 @@ const useStore = defineStore('store', {
     actions: {
         setAction(value) {
             this.forms.action = value;
+        },
+        setChannel(value) {
+            this.channel = value;
+        },
+        setModeType(value) {
+            this.modeType = value;
         },
         setIsAbout(value) {
             this.isAbout = value;
