@@ -1,5 +1,5 @@
 # AI客户端软件介绍
-
+先设置选择好对应的默认模型提供商
 ## 概述
 
 本软件是一款高度集成的AI客户端，采用Wails框架结合Ant Design Vue进行开发。软件的最大特点是仅需一个exe文件即可运行，无需安装任何额外的环境，极大地方便了用户的使用。软件支持多种对话功能，包括AI对话、文件对话、数据库对话、图像对话等，同时具备提示词管理、本地知识库管理、函数调用等功能，并能够调用任何兼容OpenAI接口的AI平台。此外，软件支持本地化部署运行，是目前最轻量级的AI客户端。
@@ -9,6 +9,10 @@
 ### 1. AI对话
 - **智能对话**：支持与AI进行自然语言对话，提供丰富的交互体验。
 - **多平台支持**：能够调用任何兼容OpenAI接口的AI平台，确保了广泛的应用范围。
+  ![image](https://github.com/user-attachments/assets/ebd76822-91c4-4a6e-b3c5-3981865d8064)
+  增加切换模式，无api可切换网页模式
+![image](https://github.com/user-attachments/assets/69fb9502-4b3c-40ef-b533-683736e982f8)
+
 ![image](https://github.com/user-attachments/assets/d882b546-dc1d-4f88-aef7-119d5300ca9a)
 
 ### 2. 文件对话
