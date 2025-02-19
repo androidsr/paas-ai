@@ -170,7 +170,7 @@ func init() {
 			"models" TEXT DEFAULT '',
 			"remark" TEXT DEFAULT '',
 			"priority" integer NOT NULL,
-			"original_url" TEXT NOT NULL,
+			"original_url" TEXT DEFAULT '',
 			PRIMARY KEY ("id")
 		);
 	`).Error
