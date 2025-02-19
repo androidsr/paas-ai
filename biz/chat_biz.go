@@ -170,6 +170,7 @@ func init() {
 			"models" TEXT DEFAULT '',
 			"remark" TEXT DEFAULT '',
 			"priority" integer NOT NULL,
+			"original_url" TEXT NOT NULL,
 			PRIMARY KEY ("id")
 		);
 	`).Error
@@ -177,24 +178,25 @@ func init() {
 		panic(err)
 	}
 	db.Exec(`
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889136494312951808, '本机ollama', 'http://localhost:11434/v1', 'token', 11, 'qv2', -1, NULL);
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889158531488157696, '文心一言', 'https://qianfan.baidubce.com/v2', '', 99, 'ernie-4.0-8k-latest,ernie-4.0-turbo-128k', -1, '大模型token申请地址：
-		https://console.bce.baidu.com/iam/#/iam/apikey/list');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889183926614757376, '通义千问', 'https://dashscope.aliyuncs.com/compatible-mode/v1', '', 3, 'qwen-max-latest', -1, '大模型token申请地址：
-		https://bailian.console.aliyun.com/?apiKey=1#/api-key');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889184913454796800, '智谱清言', 'https://open.bigmodel.cn/api/paas/v4', '', 99, 'glm-4-plus,glm-4-air,glm-4-airx,glm-4-long,glm-4-flashx,glm-4-flash', -1, '大模型token申请地址：
-		https://www.bigmodel.cn/usercenter/proj-mgmt/apikeys');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889185292728930304, '科大讯飞', 'https://spark-api-open.xf-yun.com/v1', '', 6, 'generalv3.5', -1, '大模型token申请地址：
-		https://console.xfyun.cn/app/myapp');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889185484219879424, '百川大模型', 'https://api.baichuan-ai.com/v1', '', 2, 'Baichuan4-Turbo,Baichuan4-Air,Baichuan4,Baichuan3-Turbo,Baichuan3-Turbo-128k,Baichuan2-Turbo', -1, '模型token申请地址：
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889136494312951808, '本机ollama', 'http://localhost:11434/v1', 'token', 11, 'deepseek-r1:8b,qwen2.5-coder:7b,ZimaBlueAI/MiniCPM-o-2_6:latest', -1, NULL, NULL);
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889158531488157696, '文心一言', 'https://qianfan.baidubce.com/v2', '', 99, 'ernie-4.0-8k-latest,ernie-4.0-turbo-128k', -1, '大模型token申请地址：
+		https://console.bce.baidu.com/iam/#/iam/apikey/list', NULL);
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889183926614757376, '通义千问', 'https://dashscope.aliyuncs.com/compatible-mode/v1', '', 3, 'qwen-max-latest', -1, '大模型token申请地址：
+		https://bailian.console.aliyun.com/?apiKey=1#/api-key', 'https://tongyi.aliyun.com/qianwen');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889184913454796800, '智谱清言', 'https://open.bigmodel.cn/api/paas/v4', '', 99, 'glm-4-plus,glm-4-air,glm-4-airx,glm-4-long,glm-4-flashx,glm-4-flash', -1, '大模型token申请地址：
+		https://www.bigmodel.cn/usercenter/proj-mgmt/apikeys', 'https://chatglm.cn/main/alltoolsdetail?lang=zh');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889185292728930304, '科大讯飞', 'https://spark-api-open.xf-yun.com/v1', '', 6, 'generalv3.5', -1, '大模型token申请地址：
+		https://console.xfyun.cn/app/myapp', 'https://xinghuo.xfyun.cn/desk');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889185484219879424, '百川大模型', 'https://api.baichuan-ai.com/v1', '', 2, 'Baichuan4-Turbo,Baichuan4-Air,Baichuan4,Baichuan3-Turbo,Baichuan3-Turbo-128k,Baichuan2-Turbo', -1, '模型token申请地址：
 		https://platform.baichuan-ai.com/console/apikey
-		');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889186198371438592, '腾讯混元', 'https://api.hunyuan.cloud.tencent.com/v1', '', 5, 'hunyuan-turbo-latest', -1, '大模型token申请地址：
-		https://console.cloud.tencent.com/hunyuan/api-key');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889221866447441920, 'DeepSeek', 'https://api.deepseek.com', '', 99, 'deepseek-chat,deepseek-reasoner', -1, '大模型token 申请地址：
-		https://platform.deepseek.com/api_keys');
-		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark") VALUES (1889297593876353024, '硅基流动', 'https://api.siliconflow.cn/v1', '', 6, 'deepseek-ai/DeepSeek-R1-Distill-Llama-70B,deepseek-ai/DeepSeek-R1,deepseek-ai/DeepSeek-R1-Distill-Qwen-32B,deepseek-ai/DeepSeek-R1-Distill-Qwen-14B,deepseek-ai/DeepSeek-R1-Distill-Llama-8B,deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B,Pro/deepseek-ai/DeepSeek-R1-Distill-Llama-8B,Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B', -1, '大模型token申请地址：
-		https://cloud.siliconflow.cn/account/ak');
+		', 'https://ying.baichuan-ai.com/chat?from=home');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889186198371438592, '腾讯混元', 'https://api.hunyuan.cloud.tencent.com/v1', '', 5, 'hunyuan-turbo-latest', -1, '大模型token申请地址：
+		https://console.cloud.tencent.com/hunyuan/api-key', 'https://yuanbao.tencent.com/chat/naQivTmsDa');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889221866447441920, 'DeepSeek', 'https://api.deepseek.com', '', 99, 'deepseek-chat,deepseek-reasoner', -1, '大模型token 申请地址：
+		https://platform.deepseek.com/api_keys', 'https://chat.deepseek.com/');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889297593876353024, '硅基流动', 'https://api.siliconflow.cn/v1', '', 6, 'deepseek-ai/DeepSeek-R1-Distill-Llama-70B,deepseek-ai/DeepSeek-R1,deepseek-ai/DeepSeek-R1-Distill-Qwen-32B,deepseek-ai/DeepSeek-R1-Distill-Qwen-14B,deepseek-ai/DeepSeek-R1-Distill-Llama-8B,deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B,Pro/deepseek-ai/DeepSeek-R1-Distill-Llama-8B,Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B', -1, '大模型token申请地址：
+		https://cloud.siliconflow.cn/account/ak', 'https://cloud.siliconflow.cn/models');
+		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1891785744574320640, 'ChatGPT', 'https://chat.openai.com/chat', '1', 1, '1', -1, '', 'https://chat.openai.com/chat');
 	`)
 	LoadConfig()
 	fmt.Println("初始化数据库成功！")
