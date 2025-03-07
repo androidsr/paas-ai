@@ -24,7 +24,7 @@
             </a-form-item>
 
             <a-form-item label="系统提示词">
-              <a-input v-model:value="system" :disabled="!!systemId" />
+              <a-textarea v-model:value="system" :disabled="!!systemId" />
             </a-form-item>
 
             <a-form-item label="历史数量">
