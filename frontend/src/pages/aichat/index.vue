@@ -83,7 +83,7 @@
       <a-col :span="19">
         <a-row>
           <div :style="'width:100%;height:100%;border: 1px solid #e9e9e9;'">
-            <md-preview :modelValue="result">
+            <md-preview :modelValue="result" :codeFoldable="false" :preview-theme="'github'" :theme="'light'">
             </md-preview>
           </div>
         </a-row>
@@ -114,8 +114,8 @@
         </a-row>
         <a-row style="margin-top: 10px;">
           <a-col :flex="1">
-            <a-textarea type="text" placeholder="Enter发送" rows="3" v-model:value="message" @keydown.enter.prevent="sendMessage"
-              :loading="loadingSend" style="resize: none; " />
+            <a-textarea type="text" placeholder="Enter发送" rows="3" v-model:value="message"
+              @keydown.enter.prevent="sendMessage" :loading="loadingSend" style="resize: none; " />
           </a-col>
         </a-row>
       </a-col>
@@ -135,20 +135,19 @@
 /* import Markdown from '@/components/Markdown.vue';
  */import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { message } from 'ant-design-vue';
-/* import 'highlight.js/styles/a11y-dark.css';
- */import { Base64 } from 'js-base64';
-import { MdPreview } from 'md-editor-v3';
-import 'md-editor-v3/lib/preview.css';
 import Clipboard from 'clipboard';
+/* import 'highlight.js/styles/a11y-dark.css';
+ */ import { Base64 } from 'js-base64';
+import { MdPreview } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
 
+import { GetList as ChannelList, Get } from '../../../wailsjs/go/biz/AiChannelBiz.js';
+import { Clean, GetImage, Upload } from '../../../wailsjs/go/biz/ChatBiz.js';
 import { GetList as CollectionList } from '../../../wailsjs/go/biz/CollectionBiz.js';
 import { GetList as DocumentList } from '../../../wailsjs/go/biz/DocumentBiz.js';
 import { GetList as FunctionList } from '../../../wailsjs/go/biz/FunctionBiz.js';
-import { Get } from '../../../wailsjs/go/biz/AiChannelBiz.js';
 import { GetList as PromptList } from '../../../wailsjs/go/biz/PromptBiz.js';
-import { Clean, Upload, GetImage } from '../../../wailsjs/go/biz/ChatBiz.js';
 import { GetConfig } from '../../../wailsjs/go/main/App';
-import { GetList as ChannelList } from '../../../wailsjs/go/biz/AiChannelBiz.js';
 
 export default {
   components: {
@@ -563,7 +562,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   border: 1px solid #ccc;
   overflow: auto;
