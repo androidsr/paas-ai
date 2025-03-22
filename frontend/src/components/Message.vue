@@ -157,16 +157,19 @@ export default {
 }
 
 .user .message-content {
-    background: #007aff;
-    color: white;
+    background: white;
+    color: black;
     text-align: right;
     border-top-right-radius: 0;
+    border: 1px solid #d9d5d5;
+
 }
 
 .ai .message-content {
-    background: #f1f1f1;
+    background: white;
     color: black;
     border-top-left-radius: 0;
+    border: 1px solid #d9d5d5;
 }
 
 .hljs {
