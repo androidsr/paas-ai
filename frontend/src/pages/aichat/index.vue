@@ -326,13 +326,8 @@ export default {
         if (!this.message) {
           return;
         }
-        let newMessage = "### " + this.message;
-        this.$store.addResult(newMessage);
-        /* if (this.result != "") {
-
-        } else {
-          this.result = ' ### ' + this.message + "\n";
-        } */
+        let newMessage = "#### " + this.message;
+        this.$store.addResult({ type: 'user', message: newMessage });
         var sendStr = this.message;
         if (this.cnAnswer) {
           sendStr += ";使用中文回答"
@@ -411,6 +406,7 @@ export default {
           onopen: () => {
             m.isLoading = true;
             m.message = "";
+            m.$store.addResult({ type: 'ai', message: "" });
           },
           onmessage: (e) => {
             if (this.isLoading) {

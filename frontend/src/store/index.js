@@ -62,12 +62,10 @@ const useStore = defineStore('store', {
             if (idx < 0) {
                 idx = 0;
             }
-            this.chats.result[idx] += v;
+            this.chats.result[idx].message += v;
         },
         addResult(v) {
             this.chats.result.push(v);
-            this.chats.result.push("");
-            
         },
         setChats(v) {
             this.chats = v;

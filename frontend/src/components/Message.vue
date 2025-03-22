@@ -1,15 +1,14 @@
 <template>
     <div class="chat-container">
         <div class="chat-box" ref="chatBox">
-            <div v-for="(msg, index) in messages" :key="index" class="message-container" :class="msgClass(index)">
+            <div v-for="(item, index) in messages" :key="index" class="message-container" :class="item.type">
                 <!-- <img :src="avatars[msgClass(index)]" class="avatar" /> -->
-                <UserOutlined v-if="msgClass(index) == 'user'"
-                    style="padding-left: 10px;font-size: 20px;color: cadetblue;" />
-                <AndroidOutlined v-if="msgClass(index) == 'ai'"
+                <UserOutlined v-if="item.type == 'user'" style="padding-left: 10px;font-size: 20px;color: cadetblue;" />
+                <AndroidOutlined v-if="item.type == 'ai'"
                     style="padding-right: 10px;font-size: 20px;color: cadetblue;" />
-                <div class="message-content">
-                    <div v-html="renderMarkdown(msg)"></div>
-                    <div><a class="copy-message" @click="copyMessage(index)" v-if="msg.length > 0">复制</a>
+                <div class="message-content" v-if="item.type == 'user' || item.type == 'ai'">
+                    <div v-html="renderMarkdown(item.message)"></div>
+                    <div v-if="item.type == 'ai'"><a class="copy-message" @click="copyMessage(index)" v-if="item.message.length > 0">复制</a>
                     </div>
                 </div>
             </div>
@@ -81,7 +80,7 @@ export default {
     methods: {
         copyMessage(index) {
             let clipboard = new Clipboard('.copy-message', {
-                text: () => this.messages[index] || "",
+                text: () => this.messages[index].message || "",
             });
             clipboard.on('success', (e) => {
                 this.$message.success('复制成功');
