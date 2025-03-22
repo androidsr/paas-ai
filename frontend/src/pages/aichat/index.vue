@@ -175,7 +175,7 @@ export default {
   mounted() {
     this.result = this.$store.chats.result;
     this.clipboard = new Clipboard(this.$refs.copyBtn, {
-      text: () => this.$store.chats.result || "",
+      text: () => this.$store.chats.result.join("\n") || "",
     });
 
     this.clipboard.on('success', () => {

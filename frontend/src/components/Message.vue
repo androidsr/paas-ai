@@ -9,6 +9,8 @@
                     style="padding-right: 10px;font-size: 20px;color: cadetblue;" />
                 <div class="message-content">
                     <div v-html="renderMarkdown(msg)"></div>
+                    <div><a class="copy-message" @click="copyMessage(index)" v-if="msg.length > 0">复制</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -16,11 +18,11 @@
 </template>
 
 <script>
-import MarkdownIt from "markdown-it";
+import Clipboard from 'clipboard';
 import hljs from "highlight.js";
-import mila from "markdown-it-link-attributes";
 import "highlight.js/styles/atom-one-dark.css"; // 更贴近 VSCode 主题
-import Clipboard from 'clipboard'
+import MarkdownIt from "markdown-it";
+import mila from "markdown-it-link-attributes";
 
 export default {
     props: {
@@ -30,22 +32,22 @@ export default {
         },
     },
     mounted() {
-        if (this.clipboard == null) {
-            this.clipboard = new Clipboard('.copy-btn')
-            this.clipboard.on('success', (e) => {
+        if (this.copyCode == null) {
+            this.copyCode = new Clipboard('.copy-btn')
+            this.copyCode.on('success', (e) => {
                 this.$message.success('复制成功')
             })
-            this.clipboard.on('error', (e) => {
+            this.copyCode.on('error', (e) => {
                 this.$message.error('复制成功失败')
             });
         }
     },
     destroyed() {
-        this.clipboard.destroy()
+        this.copyCode.destroy()
     },
     data() {
         return {
-            clipboard: null,
+            copyCode: null,
             mdParser: new MarkdownIt({
                 html: false,
                 linkify: true,
@@ -56,7 +58,7 @@ export default {
                     // 当前时间加随机数生成唯一的id标识
                     const codeIndex = parseInt(Date.now()) + Math.floor(Math.random() * 10000000)
                     // 复制功能主要使用的是 clipboard.js
-                    let html = `<a class="copy-btn" type="button" style="float:right" data-clipboard-action="copy" data-clipboard-target="#copy${codeIndex}">复制</a>\n`
+                    let html = `<a class="copy-btn" style="float:right" data-clipboard-action="copy" data-clipboard-target="#copy${codeIndex}">复制</a>\n`
                     if (lang && hljs.getLanguage(lang)) {
                         try {
                             // highlight.js 高亮代码
@@ -77,6 +79,20 @@ export default {
         };
     },
     methods: {
+        copyMessage(index) {
+            let clipboard = new Clipboard('.copy-message', {
+                text: () => this.messages[index] || "",
+            });
+            clipboard.on('success', (e) => {
+                this.$message.success('复制成功');
+                clipboard.destroy();
+
+            })
+            clipboard.on('error', (e) => {
+                this.$message.error('复制成功失败');
+                clipboard.destroy();
+            });
+        },
         renderMarkdown(content) {
             return this.mdParser.render(content);
         },
@@ -90,11 +106,11 @@ export default {
             });
         },
     },
-    watch: {
+    /* watch: {
         messages() {
-            this.scrollToBottom();
+           // this.scrollToBottom();
         },
-    },
+    }, */
 };
 </script>
 
@@ -133,7 +149,7 @@ export default {
 
 .message-content {
     max-width: 90%;
-    padding: 10px 14px;
+    padding: 10px 10px;
     border-radius: 12px;
     word-wrap: break-word;
     position: relative;
