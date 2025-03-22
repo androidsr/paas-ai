@@ -1,13 +1,15 @@
 <template>
   <a-config-provider :locale="locale" :theme="{
     token: {
-      borderRadius: 1,
+      borderRadius: 3,
       sizeStep: 4,
       sizeUnit: 4,
       wireframe: true,
       margin: '8px',
       fontSize: 14,
-      colorPrimary: '#007bff'
+      colorPrimary: '#007bff',
+      controlHeight: 34,
+      lineWidth: 0.5,
     },
     components: {
 
@@ -80,7 +82,7 @@ export default {
     EventsOn('go-to-page', (page) => {
       this.goToPage(page);
     });
-    
+
     this.$router.push(this.selectedKey);
     GetConfig().then((res) => {
       if (res.code == 200) {

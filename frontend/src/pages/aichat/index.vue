@@ -1,86 +1,7 @@
 <template>
-  <div style="padding-left:8px;background-color: white;">
+  <div style="background-color: white;">
     <a-row :gutter="16">
-      <a-col :span="5" style="border: 1px solid #e9e9e9;overflow: auto;height: 96vh;" class="no-scrollbar">
-        <a-tabs v-model:activeKey="selected">
-          <a-tab-pane key="chatConfig" tab="对话设置"></a-tab-pane>
-          <a-tab-pane key="modelConfig" tab="模型设置"></a-tab-pane>
-        </a-tabs>
-        <br />
-        <a-form layout="vertical">
-          <template v-if="selected === 'chatConfig'">
-            <a-form-item label="AI平台">
-              <a-select v-model:value="channelId" :options="ahChannels" @change="getChannelItem" />
-            </a-form-item>
-            <a-form-item label="选择模型">
-              <a-select v-model:value="model" :options="models" />
-            </a-form-item>
-            <a-form-item label="对话模式">
-              <a-select v-model:value="chatType" :options="chatTypeData" />
-            </a-form-item>
-
-            <a-form-item label="选择角色">
-              <a-select v-model:value="systemId" :options="systemDatas" :allowClear="true" />
-            </a-form-item>
-
-            <a-form-item label="系统提示词">
-              <a-textarea v-model:value="system" :disabled="!!systemId" />
-            </a-form-item>
-
-            <a-form-item label="历史数量">
-              <a-input-number v-model:value="cacheLimit" style="width: 100%" />
-            </a-form-item>
-
-            <a-form-item label="函数调用" v-if="chatType === '4'">
-              <a-select v-model:value="funcCall" :options="funcs" :allowClear="true" />
-            </a-form-item>
-
-            <a-form-item label="流程调用" v-if="chatType === '5'">
-              <a-select v-model:value="flowId" :options="flows" :allowClear="true" />
-            </a-form-item>
-
-            <a-form-item label="知识库集合" v-if="chatType === '2'">
-              <a-select v-model:value="collectionId" :options="collectionList" @change="collectionChange"
-                :allowClear="true" />
-            </a-form-item>
-
-            <a-form-item label="知识库文档" v-if="chatType === '2'">
-              <a-select v-model:value="filename" :options="filenameList" :allowClear="true" />
-            </a-form-item>
-
-            <a-form-item label="最大条数" v-if="chatType === '2'">
-              <a-input-number v-model:value="pageSize" style="width: 100%" />
-            </a-form-item>
-
-            <a-form-item label="相似比例" v-if="chatType === '2'">
-              <a-slider v-model:value="similarityScore" :min="0" :max="10" />
-            </a-form-item>
-          </template>
-
-          <template v-if="selected === 'modelConfig'">
-            <a-form-item label="温度控制" title="控制输出结果的随机性：值越低更严谨、值越高创建性强。">
-              <a-slider v-model:value="temperature" :min="0" :max="10" />
-            </a-form-item>
-
-            <a-form-item label="采样(P)" title="控制文本的随机性和多样性。">
-              <a-slider v-model:value="topP" :min="0" :max="10" />
-            </a-form-item>
-
-            <a-form-item label="采样(K)" title="token保留数量，选出排名前N个值">
-              <a-slider v-model:value="topK" :min="0" :max="20" />
-            </a-form-item>
-            <a-form-item label="输出设置">
-              <a-checkbox v-model:checked="stream">流式输出</a-checkbox>
-              <a-space :size="10" />
-              <a-checkbox v-model:checked="cnAnswer">强制中文</a-checkbox>
-              <a-space :size="10" />
-              <a-checkbox v-model:checked="jsonFormat">格式化</a-checkbox>
-            </a-form-item>
-          </template>
-        </a-form>
-      </a-col>
-
-      <a-col :span="19">
+      <a-col :span="24">
         <a-row>
           <div :style="'width:100%;height:100%;border: 1px solid #e9e9e9;'">
             <Message :messages="$store.chats.result" />
@@ -111,6 +32,81 @@
               <a-button size="small" @click="clean" title="清空对话">
                 <ClearOutlined />
               </a-button>
+              <a-popover placement="rightBottom" trigger="click" v-model:open="showSetting">
+                <template #content>
+                  <div>
+                    <a-form style="max-height: 75vh;overflow: auto;" :label-col="{ style: { width: '80px' } }">
+                      <a-form-item label="AI平台">
+                        <a-select v-model:value="channelId" :options="ahChannels" @select="getChannelItem" @change="settingOk"/>
+                      </a-form-item>
+                      <a-form-item label="选择模型">
+                        <a-select v-model:value="model" :options="models" @change="settingOk"/>
+                      </a-form-item>
+                      <a-form-item label="对话模式">
+                        <a-select v-model:value="chatType" :options="chatTypeData"@change="settingOk" />
+                      </a-form-item>
+
+                      <a-form-item label="选择角色">
+                        <a-select v-model:value="systemId" :options="systemDatas" :allowClear="true" @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="系统提示词">
+                        <a-textarea v-model:value="system" :disabled="!!systemId" @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="历史数量">
+                        <a-input-number v-model:value="cacheLimit" style="width: 100%" @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="函数调用" v-if="chatType === '4'">
+                        <a-select v-model:value="funcCall" :options="funcs" :allowClear="true" @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="流程调用" v-if="chatType === '5'">
+                        <a-select v-model:value="flowId" :options="flows" :allowClear="true" @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="知识库集合" v-if="chatType === '2'">
+                        <a-select v-model:value="collectionId" :options="collectionList" @select="collectionChange"
+                          :allowClear="true" @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="知识库文档" v-if="chatType === '2'">
+                        <a-select v-model:value="filename" :options="filenameList" :allowClear="true"  @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="最大条数" v-if="chatType === '2'">
+                        <a-input-number v-model:value="pageSize" style="width: 100%"  @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="相似比例" v-if="chatType === '2'">
+                        <a-slider v-model:value="similarityScore" :min="0" :max="10"  @change="settingOk"/>
+                      </a-form-item>
+                      <a-form-item label="温度控制" title="控制输出结果的随机性：值越低更严谨、值越高创建性强。">
+                        <a-slider v-model:value="temperature" :min="0" :max="10"  @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="采样(P)" title="控制文本的随机性和多样性。">
+                        <a-slider v-model:value="topP" :min="0" :max="10"  @change="settingOk"/>
+                      </a-form-item>
+
+                      <a-form-item label="采样(K)" title="token保留数量，选出排名前N个值">
+                        <a-slider v-model:value="topK" :min="0" :max="20"  @change="settingOk"/>
+                      </a-form-item>
+                      <a-form-item label="输出设置">
+                        <a-checkbox v-model:checked="stream"  @change="settingOk">流式输出</a-checkbox>
+                        <a-space :size="10" />
+                        <a-checkbox v-model:checked="cnAnswer"  @change="settingOk">强制中文</a-checkbox>
+                        <a-space :size="10" />
+                        <a-checkbox v-model:checked="jsonFormat"  @change="settingOk">格式化</a-checkbox>
+                      </a-form-item>
+                    </a-form>
+                  </div>
+                </template>
+                <a-button size="small">
+                  <SettingOutlined />
+                </a-button>
+              </a-popover>
             </a-space>
           </a-col>
         </a-row>
@@ -270,6 +266,41 @@ export default {
     }
   },
   methods: {
+    settingOk() {
+      //this.showSetting = false;
+      var sendData = {
+        databaseId: this.databaseId,
+        channelId: this.channelId,
+        chatType: this.chatType,
+        sessionId: this.sessionId,
+        system: this.system,
+        stream: this.stream,
+        systemId: this.systemId,
+        model: this.model,
+        cacheLimit: this.cacheLimit,
+        uploadFileId: this.uploadFileId,
+        sourceType: this.sourceType,
+        collectionName: this.collectionName,
+        cnAnswer: this.cnAnswer,
+        collectionId: this.collectionId,
+        jsonFormat: this.jsonFormat,
+        funcCall: this.funcCall,
+        similarityScore: this.similarityScore,
+        temperature: this.temperature,
+        result: this.result,
+        flowId: this.flowId,
+        topK: this.topK,
+        topP: this.topP,
+        filename: this.filename,
+        mode: this.mode,
+        pageSize: this.pageSize,
+        pptTemplate: this.pptTemplate,
+        filter: {
+          filename: this.filename
+        }
+      }
+      this.$store.setChats(sendData);
+    },
     getChannelList() {
       ChannelList().then(res => {
         if (res.code == 200) {
