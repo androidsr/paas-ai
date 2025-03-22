@@ -453,6 +453,7 @@ export default {
           },
           onclose() {
             m.isLoading = false;
+            message.success("处理完成！");
             m.ctrl.abort();
           },
           onerror(err) {
