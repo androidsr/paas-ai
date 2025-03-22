@@ -17,7 +17,7 @@ const useStore = defineStore('store', {
             cnAnswer: true,
             model: "",
             similarityScore: 7,
-            result: "",
+            result: [],
             filename: "",
             flowId: "",
             mode: "1",
@@ -54,11 +54,20 @@ const useStore = defineStore('store', {
         setQueryData(key, value) {
             this.queryData[key] = value;
         },
+        cleanResult(v) {
+            this.chats.result = [];
+        },
         setResult(v) {
-            this.chats.result = v;
+            let idx = this.chats.result.length - 1;
+            if (idx < 0) {
+                idx = 0;
+            }
+            this.chats.result[idx] += v;
         },
         addResult(v) {
-            this.chats.result += v;
+            this.chats.result.push(v);
+            this.chats.result.push("");
+            
         },
         setChats(v) {
             this.chats = v;

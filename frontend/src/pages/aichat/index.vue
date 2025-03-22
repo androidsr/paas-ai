@@ -83,8 +83,10 @@
       <a-col :span="19">
         <a-row>
           <div :style="'width:100%;height:100%;border: 1px solid #e9e9e9;'">
+            <Message :messages="$store.chats.result" />
+            <!-- 
             <md-preview :modelValue="result" :codeFoldable="false" :preview-theme="'github'" :theme="'light'">
-            </md-preview>
+            </md-preview> -->
           </div>
         </a-row>
         <a-row>
@@ -132,14 +134,10 @@
 }
 </style>
 <script>
-/* import Markdown from '@/components/Markdown.vue';
- */import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { message } from 'ant-design-vue';
 import Clipboard from 'clipboard';
-/* import 'highlight.js/styles/a11y-dark.css';
- */ import { Base64 } from 'js-base64';
-import { MdPreview } from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
+import { Base64 } from 'js-base64';
 
 import { GetList as ChannelList, Get } from '../../../wailsjs/go/biz/AiChannelBiz.js';
 import { Clean, GetImage, Upload } from '../../../wailsjs/go/biz/ChatBiz.js';
@@ -148,10 +146,11 @@ import { GetList as DocumentList } from '../../../wailsjs/go/biz/DocumentBiz.js'
 import { GetList as FunctionList } from '../../../wailsjs/go/biz/FunctionBiz.js';
 import { GetList as PromptList } from '../../../wailsjs/go/biz/PromptBiz.js';
 import { GetConfig } from '../../../wailsjs/go/main/App';
+import Message from '../../components/Message.vue';
 
 export default {
   components: {
-    MdPreview,
+    Message,
   },
   created() {
     this.getFlowsList();
@@ -174,7 +173,6 @@ export default {
     });
   },
   mounted() {
-    //window.location.href = "https://yuanbao.tencent.com/chat/naQivTmsDa";
     this.result = this.$store.chats.result;
     this.clipboard = new Clipboard(this.$refs.copyBtn, {
       text: () => this.$store.chats.result || "",
@@ -328,13 +326,13 @@ export default {
         if (!this.message) {
           return;
         }
-        if (this.result != "") {
-          let newMessage = "\n### " + this.message + "\n"
-          this.result += newMessage;
-          this.$store.addResult(newMessage)
+        let newMessage = "### " + this.message;
+        this.$store.addResult(newMessage);
+        /* if (this.result != "") {
+
         } else {
           this.result = ' ### ' + this.message + "\n";
-        }
+        } */
         var sendStr = this.message;
         if (this.cnAnswer) {
           sendStr += ";使用中文回答"
@@ -417,8 +415,7 @@ export default {
           onmessage: (e) => {
             if (this.isLoading) {
               endData = Base64.decode(e.data)
-              m.$store.addResult(endData)
-              m.result = m.$store.chats.result;
+              m.$store.setResult(endData);
             }
           },
           onclose() {
@@ -455,8 +452,8 @@ export default {
     clean() {
       this.isLoading = false;
       this.message = "";
-      this.$store.setResult("");
-      this.result = this.$store.chats.result
+      this.$store.cleanResult();
+      this.result = this.$store.chats.result;
       Clean();
     },
     handleResize() {
