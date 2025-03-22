@@ -4,9 +4,9 @@
             <div v-for="(msg, index) in messages" :key="index" class="message-container" :class="msgClass(index)">
                 <!-- <img :src="avatars[msgClass(index)]" class="avatar" /> -->
                 <UserOutlined v-if="msgClass(index) == 'user'"
-                    style="padding-left: 10px;font-size: 22px;color: cadetblue;" />
+                    style="padding-left: 10px;font-size: 20px;color: cadetblue;" />
                 <AndroidOutlined v-if="msgClass(index) == 'ai'"
-                    style="padding-right: 10px;font-size: 22px;color: cadetblue;" />
+                    style="padding-right: 10px;font-size: 20px;color: cadetblue;" />
                 <div class="message-content">
                     <div v-html="renderMarkdown(msg)"></div>
                 </div>
@@ -20,6 +20,7 @@ import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import mila from "markdown-it-link-attributes";
 import "highlight.js/styles/atom-one-dark.css"; // 更贴近 VSCode 主题
+import Clipboard from 'clipboard'
 
 export default {
     props: {
@@ -28,20 +29,50 @@ export default {
             required: true,
         },
     },
+    mounted() {
+        if (this.clipboard == null) {
+            this.clipboard = new Clipboard('.copy-btn')
+            this.clipboard.on('success', (e) => {
+                this.$message.success('复制成功')
+            })
+            this.clipboard.on('error', (e) => {
+                this.$message.error('复制成功失败')
+            });
+        }
+    },
+    destroyed() {
+        this.clipboard.destroy()
+    },
     data() {
         return {
+            clipboard: null,
             mdParser: new MarkdownIt({
                 html: false,
                 linkify: true,
                 breaks: true,
                 xhtmlOut: true,
                 typographer: true,
-                highlight: (str, lang) => {
+                highlight: function (str, lang) {
+                    // 当前时间加随机数生成唯一的id标识
+                    const codeIndex = parseInt(Date.now()) + Math.floor(Math.random() * 10000000)
+                    // 复制功能主要使用的是 clipboard.js
+                    let html = `<a class="copy-btn" type="button" style="float:right" data-clipboard-action="copy" data-clipboard-target="#copy${codeIndex}">复制</a>\n`
                     if (lang && hljs.getLanguage(lang)) {
-                        return `<pre class="hljs" style='padding:12px'><code>${hljs.highlight(str, { language: lang }).value}</code></pre>`;
+                        try {
+                            // highlight.js 高亮代码
+                            const preCode = hljs.highlight(lang, str, true).value
+                            html = html + preCode
+                            // 将代码包裹在 textarea 中
+                            return `<pre class="hljs" style="padding:8px"><code>${html}</code></pre><textarea style="position: absolute;top: -9999px;left: -9999px;z-index: -9999;" id="copy${codeIndex}">${str.replace(/<\/textarea>/g, '&lt;/textarea>')}</textarea>`
+                        } catch (error) {
+                            console.log(error)
+                        }
                     }
-                    return `<pre class="hljs" style='padding:12px'><code>${hljs.highlightAuto(str).value}</code></pre>`;
-                },
+
+                    html = html + str;
+                    // 将代码包裹在 textarea 中
+                    return `<pre class="hljs" style="padding:8px"><code>${html}</code></pre><textarea style="position: absolute;top: -9999px;left: -9999px;z-index: -9999;" id="copy${codeIndex}">${str.replace(/<\/textarea>/g, '&lt;/textarea>')}</textarea>`
+                }
             }).use(mila, { attrs: { target: "_blank", rel: "noopener" } }),
         };
     },
@@ -142,5 +173,69 @@ export default {
     white-space: pre-wrap;
     /* 使代码块可以换行 */
     word-wrap: break-word;
+}
+
+pre.hljs {
+    padding: 12px 2px 12px 40px !important;
+    border-radius: 5px !important;
+    position: relative;
+    font-size: 14px !important;
+    line-height: 22px !important;
+    overflow: hidden !important;
+
+    code {
+        display: block !important;
+        margin: 0 10px !important;
+        overflow-x: auto !important;
+    }
+
+    .line-numbers-rows {
+        position: absolute;
+        pointer-events: none;
+        top: 12px;
+        bottom: 12px;
+        left: 0;
+        font-size: 100%;
+        width: 40px;
+        text-align: center;
+        letter-spacing: -1px;
+        border-right: 1px solid rgba(0, 0, 0, .66);
+        user-select: none;
+        counter-reset: linenumber;
+
+        span {
+            pointer-events: none;
+            display: block;
+            counter-increment: linenumber;
+
+            &:before {
+                content: counter(linenumber);
+                color: #999;
+                display: block;
+                text-align: center;
+            }
+        }
+    }
+
+    b.name {
+        position: absolute;
+        top: 2px;
+        right: 50px;
+        z-index: 10;
+        color: #999;
+        pointer-events: none;
+    }
+
+    .copy-btn {
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        z-index: 10;
+        color: #333;
+        cursor: pointer;
+        background-color: #fff;
+        border: 0;
+        border-radius: 2px;
+    }
 }
 </style>
