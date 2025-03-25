@@ -2,13 +2,13 @@
     <div class="chat-container">
         <div class="chat-box" ref="chatBox">
             <div v-for="(item, index) in messages" :key="index" class="message-container" :class="item.type">
-                <!-- <img :src="avatars[msgClass(index)]" class="avatar" /> -->
                 <UserOutlined v-if="item.type == 'user'" style="padding-left: 10px;font-size: 20px;color: cadetblue;" />
                 <AndroidOutlined v-if="item.type == 'ai'"
                     style="padding-right: 10px;font-size: 20px;color: cadetblue;" />
                 <div class="message-content" v-if="item.type == 'user' || item.type == 'ai'">
                     <div v-html="renderMarkdown(item.message)"></div>
-                    <div v-if="item.type == 'ai'"><a class="copy-message" @click="copyMessage(index)" v-if="item.message.length > 0">复制</a>
+                    <div v-if="item.type == 'ai'"><a class="copy-message" @click="copyMessage(index)"
+                            v-if="item.message.length > 0">复制</a>
                     </div>
                 </div>
             </div>
@@ -54,26 +54,28 @@ export default {
                 xhtmlOut: true,
                 typographer: true,
                 highlight: function (str, lang) {
-                    // 当前时间加随机数生成唯一的id标识
-                    const codeIndex = parseInt(Date.now()) + Math.floor(Math.random() * 10000000)
-                    // 复制功能主要使用的是 clipboard.js
-                    let html = `<a class="copy-btn" style="float:right" data-clipboard-action="copy" data-clipboard-target="#copy${codeIndex}">复制</a>\n`
+                    const codeIndex = `copy-${Date.now()}-${Math.floor(Math.random() * 10000000)}`;
+
+                    let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" 
+                        data-clipboard-action="copy" data-clipboard-target="#${codeIndex}">复制</a>\n`;
+
+                    let highlightedCode = str;
+
                     if (lang && hljs.getLanguage(lang)) {
                         try {
-                            // highlight.js 高亮代码
-                            const preCode = hljs.highlight(lang, str, true).value
-                            html = html + preCode
-                            // 将代码包裹在 textarea 中
-                            return `<pre class="hljs" style="padding:8px"><code>${html}</code></pre><textarea style="position: absolute;top: -9999px;left: -9999px;z-index: -9999;" id="copy${codeIndex}">${str.replace(/<\/textarea>/g, '&lt;/textarea>')}</textarea>`
+                            highlightedCode = hljs.highlight(str, { language: lang }).value;
                         } catch (error) {
-                            console.log(error)
+                            console.error("代码高亮错误:", error);
                         }
                     }
 
-                    html = html + str;
-                    // 将代码包裹在 textarea 中
-                    return `<pre class="hljs" style="padding:8px"><code>${html}</code></pre><textarea style="position: absolute;top: -9999px;left: -9999px;z-index: -9999;" id="copy${codeIndex}">${str.replace(/<\/textarea>/g, '&lt;/textarea>')}</textarea>`
+                    return `
+                        <pre class="hljs" style="padding:8px !important">
+                            <code>${copyButton}<span id="${codeIndex}">${highlightedCode}</span></code>
+                        </pre>
+                    `;
                 }
+
             }).use(mila, { attrs: { target: "_blank", rel: "noopener" } }),
         };
     },
@@ -95,21 +97,7 @@ export default {
         renderMarkdown(content) {
             return this.mdParser.render(content);
         },
-        msgClass(index) {
-            return index % 2 === 0 ? "user" : "ai";
-        },
-        scrollToBottom() {
-            this.$nextTick(() => {
-                const chatBox = this.$refs.chatBox;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            });
-        },
     },
-    /* watch: {
-        messages() {
-           // this.scrollToBottom();
-        },
-    }, */
 };
 </script>
 
