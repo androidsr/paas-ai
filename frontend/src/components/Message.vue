@@ -22,7 +22,6 @@ import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css"; // 更贴近 VSCode 主题
 import MarkdownIt from "markdown-it";
 import mila from "markdown-it-link-attributes";
-import debounce from "lodash/debounce"; // 需要安装 lodash
 
 export default {
     props: {
@@ -47,7 +46,6 @@ export default {
     },
     data() {
         return {
-            cachedMarkdown: new Map(), // 缓存解析结果
             copyCode: null,
             mdParser: new MarkdownIt({
                 html: false,
@@ -70,14 +68,12 @@ export default {
                             console.error("代码高亮错误:", error);
                         }
                     }
-
                     return `
                         <pre class="hljs" style="padding:8px !important">
                             <code>${copyButton}<span id="${codeIndex}">${highlightedCode}</span></code>
                         </pre>
                     `;
                 }
-
             }).use(mila, { attrs: { target: "_blank", rel: "noopener" } }),
         };
     },

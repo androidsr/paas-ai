@@ -450,10 +450,8 @@ export default {
           },
           onmessage: (e) => {
             if (this.isLoading) {
-              setTimeout(() => {
-                endData = Base64.decode(e.data)
-                m.$store.setResult(endData);
-              }, 200);
+              endData = Base64.decode(e.data)
+              m.$store.setResult(endData);
             }
           },
           onclose() {
