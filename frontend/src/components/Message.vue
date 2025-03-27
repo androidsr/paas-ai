@@ -2,9 +2,8 @@
     <div class="chat-container">
         <div class="chat-box" ref="chatBox">
             <div v-for="(item, index) in messages" :key="index" class="message-container" :class="item.type">
-                <UserOutlined v-if="item.type == 'user'" style="padding-left: 10px;font-size: 20px;color: cadetblue;" />
-                <AndroidOutlined v-if="item.type == 'ai'"
-                    style="padding-right: 10px;font-size: 20px;color: cadetblue;" />
+                <UserOutlined v-if="item.type === 'user'" :style="userIconStyle" />
+                <AndroidOutlined v-if="item.type === 'ai'" :style="aiIconStyle" />
                 <div class="message-content" v-if="item.type == 'user' || item.type == 'ai'">
                     <div v-html="renderMarkdown(item.message)"></div>
                     <div v-if="item.type == 'ai'"><a class="copy-message" @click="copyMessage(index)"
@@ -29,6 +28,26 @@ export default {
             type: Array,
             required: true,
         },
+        newMessage: {
+            type: String,
+            default: ""
+        }
+    },
+    computed: {
+        userIconStyle() {
+            return {
+                paddingLeft: '10px',
+                fontSize: '20px',
+                color: 'cadetblue'
+            };
+        },
+        aiIconStyle() {
+            return {
+                paddingRight: '10px',
+                fontSize: '20px',
+                color: 'cadetblue'
+            };
+        }
     },
     mounted() {
         if (this.copyCode == null) {
@@ -46,6 +65,7 @@ export default {
     },
     data() {
         return {
+            pendingContent: "",
             copyCode: null,
             mdParser: new MarkdownIt({
                 html: false,
@@ -93,8 +113,9 @@ export default {
             });
         },
         renderMarkdown(content) {
+            if (!content) return "";
             return this.mdParser.render(content);
-        },
+        }
     },
 };
 </script>
