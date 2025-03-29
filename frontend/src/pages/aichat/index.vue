@@ -4,7 +4,7 @@
       <a-col :span="24">
         <a-row>
           <div :style="'width:100%;height:100%;border: 1px solid #e9e9e9;'">
-            <Message :messages="$store.chats.result" />
+            <Message :messages="$store.chats.result"  ref="msgView" />
             <!-- 
             <md-preview :modelValue="result" :codeFoldable="false" :preview-theme="'github'" :theme="'light'">
             </md-preview> -->
@@ -456,6 +456,7 @@ export default {
           },
           onclose() {
             m.isLoading = false;
+            m.$refs.msgView.renderAll();
             message.success("处理完成！");
             m.ctrl.abort();
           },
