@@ -8,7 +8,8 @@
                     <MdContent :renderedMessage="item.renderedMessage" :key="'content_' + item.id"
                         :ref="'content_' + item.id"></MdContent>
                     <div v-if="item.type === 'ai'">
-                        <a class="copy-message" @click="copyMessage(item.message)" v-if="item.message.length > 0">复制</a>
+                        <a class="copy-message" @click="copyMessage(item.message)"
+                            v-if="item.message.length > 0">复制</a>
                     </div>
                 </div>
             </div>
@@ -17,14 +18,14 @@
 </template>
 
 <script>
-import { defineComponent, h, createVNode, render } from 'vue';
+import G2PlotChart from "@/components/G2PlotChart.vue";
+import MdContent from "@/components/MdContent.vue";
 import Clipboard from 'clipboard';
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import MarkdownIt from "markdown-it";
 import mila from "markdown-it-link-attributes";
-import G2PlotChart from "@/components/G2PlotChart.vue";
-import MdContent from "@/components/MdContent.vue";
+import { createVNode, defineComponent, h, render } from 'vue';
 
 export default defineComponent({
     components: {
@@ -52,17 +53,13 @@ export default defineComponent({
         },
     },
     mounted() {
-        if (!this.copyCode) {
-            this.copyCode = new Clipboard('.copy-btn');
-            this.copyCode.on('success', () => this.$message.success('复制成功'));
-            this.copyCode.on('error', () => this.$message.error('复制失败'));
-        }
-
+        this.initClipboard();
         this.$nextTick(() => {
             this.renderAll();
         });
     },
     updated() {
+        //this.initClipboard();  // 重新绑定 Clipboard.js
         this.$nextTick(() => {
             this.renderVueComponents();
         });
@@ -74,6 +71,7 @@ export default defineComponent({
     },
     data() {
         return {
+            copyCode: null,
             isRendering: false,
             mdParser: new MarkdownIt({
                 html: true,
@@ -86,12 +84,35 @@ export default defineComponent({
         };
     },
     methods: {
-        copyMessage(message) {
-            navigator.clipboard.writeText(message)
-                .then(() => this.$message.success('复制成功'))
-                .catch(() => this.$message.error('复制失败'));
-        },
+        initClipboard() {
+            if (this.copyCode) {
+                this.copyCode.destroy();
+            }
+            this.copyCode = new Clipboard('.copy-btn');
+            this.copyCode.on('success', () => {
+                this.$message.success('复制成功');
+            });
 
+            this.copyCode.on('error', () => {
+                this.$message.error('复制失败');
+            });
+        },
+        copyMessage(message) {
+            const copy = new Clipboard('.copy-message', {
+                text: () => {
+                    return message;
+                },
+            });
+            copy.on('success', () => {
+                this.$message.success('复制成功');
+                copy.destroy();
+            });
+
+            copy.on('error', () => {
+                this.$message.error('复制失败');
+                copy.destroy();
+            });
+        },
         renderMarkdown(content) {
             return content ? this.mdParser.render(content) : "";
         },
@@ -110,9 +131,10 @@ export default defineComponent({
                     return '图表加载中...';
                 }
             }
+            // 生成唯一的代码块 ID
+            let codeId = `code-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+            let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" data-clipboard-action="copy" data-clipboard-target="#${codeId}">复制</a>`;
 
-            let codeIndex = `code-${this.messages.length}`;
-            let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" data-clipboard-action="copy" data-clipboard-target="#${codeIndex}">复制</a>\n`;
             let highlightedCode = str;
             if (lang && hljs.getLanguage(lang)) {
                 try {
@@ -121,7 +143,8 @@ export default defineComponent({
                     console.error("代码高亮错误:", error);
                 }
             }
-            return `<pre class="hljs" style="padding:2px !important"><code>${copyButton}<span id="${codeIndex}" >${highlightedCode}</span></code></pre>`;
+
+            return `<pre class="hljs" style="padding:2px !important">${copyButton}<code id="${codeId}">${highlightedCode}</code></pre>`;
         },
         renderAll() {
             this.isRendering = false;
