@@ -1,13 +1,14 @@
 <template>
     <div class="chat-container">
         <div class="chat-box" ref="chatBox">
-            <div v-for="(item, index) in messages" :key="index" class="message-container" :class="item.type">
+            <div v-for="(item, index) in formattedMessages" :key="item.id" class="message-container" :class="item.type">
                 <UserOutlined v-if="item.type === 'user'" :style="userIconStyle" />
                 <AndroidOutlined v-if="item.type === 'ai'" :style="aiIconStyle" />
-                <div class="message-content" v-if="item.type == 'user' || item.type == 'ai'">
-                    <div v-html="renderMarkdown(item.message)"></div>
-                    <div v-if="item.type == 'ai'"><a class="copy-message" @click="copyMessage(index)"
-                            v-if="item.message.length > 0">复制</a>
+                <div class="message-content" ref="messageContainer">
+                    <MdContent :renderedMessage="item.renderedMessage" :key="'content_' + item.id"
+                        :ref="'content_' + item.id"></MdContent>
+                    <div v-if="item.type === 'ai'">
+                        <a class="copy-message" @click="copyMessage(item.message)" v-if="item.message.length > 0">复制</a>
                     </div>
                 </div>
             </div>
@@ -16,116 +17,171 @@
 </template>
 
 <script>
+import { defineComponent, h, createVNode, render } from 'vue';
 import Clipboard from 'clipboard';
 import hljs from "highlight.js";
-import "highlight.js/styles/atom-one-dark.css"; // 更贴近 VSCode 主题
+import "highlight.js/styles/atom-one-dark.css";
 import MarkdownIt from "markdown-it";
 import mila from "markdown-it-link-attributes";
+import G2PlotChart from "@/components/G2PlotChart.vue";
+import MdContent from "@/components/MdContent.vue";
 
-export default {
+export default defineComponent({
+    components: {
+        G2PlotChart,
+        MdContent,
+    },
     props: {
         messages: {
             type: Array,
             required: true,
         },
-        newMessage: {
-            type: String,
-            default: ""
-        }
     },
     computed: {
         userIconStyle() {
-            return {
-                paddingLeft: '10px',
-                fontSize: '20px',
-                color: 'cadetblue'
-            };
+            return { paddingLeft: '10px', fontSize: '20px', color: 'cadetblue' };
         },
         aiIconStyle() {
-            return {
-                paddingRight: '10px',
-                fontSize: '20px',
-                color: 'cadetblue'
-            };
-        }
+            return { paddingRight: '10px', fontSize: '20px', color: 'cadetblue' };
+        },
+        formattedMessages() {
+            return this.messages.map((item) => ({
+                ...item,
+                renderedMessage: this.renderMarkdown(item.message),
+            }));
+        },
     },
     mounted() {
-        if (this.copyCode == null) {
-            this.copyCode = new Clipboard('.copy-btn')
-            this.copyCode.on('success', (e) => {
-                this.$message.success('复制成功')
-            })
-            this.copyCode.on('error', (e) => {
-                this.$message.error('复制成功失败')
-            });
+        if (!this.copyCode) {
+            this.copyCode = new Clipboard('.copy-btn');
+            this.copyCode.on('success', () => this.$message.success('复制成功'));
+            this.copyCode.on('error', () => this.$message.error('复制失败'));
         }
+
+        this.$nextTick(() => {
+            this.renderAll();
+        });
     },
-    destroyed() {
-        this.copyCode.destroy()
+    updated() {
+        this.$nextTick(() => {
+            this.renderVueComponents();
+        });
+    },
+    beforeUnmount() {
+        if (this.copyCode) {
+            this.copyCode.destroy();
+        }
     },
     data() {
         return {
-            pendingContent: "",
-            copyCode: null,
+            isRendering: false,
             mdParser: new MarkdownIt({
-                html: false,
+                html: true,
                 linkify: true,
                 breaks: true,
                 xhtmlOut: true,
                 typographer: true,
-                highlight: function (str, lang) {
-                    const codeIndex = `copy-${Date.now()}-${Math.floor(Math.random() * 10000000)}`;
-
-                    let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" 
-                        data-clipboard-action="copy" data-clipboard-target="#${codeIndex}">复制</a>\n`;
-
-                    let highlightedCode = str;
-
-                    if (lang && hljs.getLanguage(lang)) {
-                        try {
-                            highlightedCode = hljs.highlight(str, { language: lang }).value;
-                        } catch (error) {
-                            console.error("代码高亮错误:", error);
-                        }
-                    }
-                    return `
-                        <pre class="hljs" style="padding:8px !important">
-                            <code>${copyButton}<span id="${codeIndex}">${highlightedCode}</span></code>
-                        </pre>
-                    `;
-                }
+                highlight: this.highlightCode,
             }).use(mila, { attrs: { target: "_blank", rel: "noopener" } }),
         };
     },
     methods: {
-        copyMessage(index) {
-            let clipboard = new Clipboard('.copy-message', {
-                text: () => this.messages[index].message || "",
-            });
-            clipboard.on('success', (e) => {
-                this.$message.success('复制成功');
-                clipboard.destroy();
+        copyMessage(message) {
+            navigator.clipboard.writeText(message)
+                .then(() => this.$message.success('复制成功'))
+                .catch(() => this.$message.error('复制失败'));
+        },
 
-            })
-            clipboard.on('error', (e) => {
-                this.$message.error('复制成功失败');
-                clipboard.destroy();
+        renderMarkdown(content) {
+            return content ? this.mdParser.render(content) : "";
+        },
+
+        highlightCode(str, lang) {
+            if (lang === "g2plot") {
+                try {
+                    const data = JSON.parse(str);
+                    const chartId = `g2plot-${this.messages.length}`;
+                    if (data.type === 'Column' && !!data.label.content) {
+                        delete data.label.content;
+                        data.label.position = 'top';
+                    }
+                    return `<div class="g2plot-chart-container" data-chart-id="${chartId}" data-chart-data='${JSON.stringify(data)}'></div>`;
+                } catch (error) {
+                    return '图表加载中...';
+                }
+            }
+
+            let codeIndex = `code-${this.messages.length}`;
+            let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" data-clipboard-action="copy" data-clipboard-target="#${codeIndex}">复制</a>\n`;
+            let highlightedCode = str;
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    highlightedCode = hljs.highlight(str, { language: lang }).value;
+                } catch (error) {
+                    console.error("代码高亮错误:", error);
+                }
+            }
+            return `<pre class="hljs" style="padding:2px !important"><code>${copyButton}<span id="${codeIndex}" >${highlightedCode}</span></code></pre>`;
+        },
+        renderAll() {
+            this.isRendering = false;
+            this.renderVueComponents();
+        },
+        renderVueComponents() {
+            if (this.isRendering) return; // 如果正在渲染中，跳过这次渲染
+            this.isRendering = true;
+
+            this.$nextTick(() => {
+                if (!this.$refs.messageContainer) {
+                    this.isRendering = false;
+                    return;
+                }
+
+                const messageContainers = Array.isArray(this.$refs.messageContainer)
+                    ? this.$refs.messageContainer
+                    : [this.$refs.messageContainer];
+
+                messageContainers.forEach((container) => {
+                    container.querySelectorAll('.g2plot-chart-container').forEach((el) => {
+                        const chartData = JSON.parse(el.dataset.chartData);
+                        const chartId = el.dataset.chartId;///"g2plot-" + this.messages.length;
+                        const existingChart = this.$refs[chartId];
+                        if (existingChart && existingChart.chartId == chartId) {
+                            return; // 数据未变化，不重新渲染
+                        }
+                        const chartContainer = document.createElement('div');
+                        el.replaceWith(chartContainer);
+
+                        // 更新 chartData
+                        this.$nextTick(() => {
+                            const chartVNode = h(G2PlotChart, {
+                                chartData,
+                                key: chartId,  // 使用 chartId 作为 key 来保证更新时唯一性
+                                ref: chartId,  // 给每个图表元素加一个 ref 用来缓存
+                            });
+
+                            const vm = createVNode(chartVNode); // 创建虚拟节点
+                            const chartElement = document.createElement('div');
+                            vm.appContext = this.$.appContext; // 保证上下文一致
+                            render(vm, chartElement); // 使用 render 渲染虚拟节点
+                            chartContainer.appendChild(chartElement);
+                            this.isRendering = false;
+                        });
+                    });
+                });
             });
         },
-        renderMarkdown(content) {
-            if (!content) return "";
-            return this.mdParser.render(content);
-        }
     },
-};
+});
 </script>
+
 
 <style scoped>
 .chat-container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    height: 78vh;
+    height: 73vh;
 }
 
 .chat-box {
@@ -146,21 +202,15 @@ export default {
     flex-direction: row-reverse;
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin: 0 10px;
-}
-
 .message-content {
-    max-width: 90%;
-    padding: 10px 10px;
+    max-width: 94%;
+    padding: 10px;
     border-radius: 12px;
     word-wrap: break-word;
     position: relative;
     font-size: 14px;
     line-height: 1.6;
+    box-shadow: 1px 2px 1px rgba(73, 164, 234, 0.3);
 }
 
 .user .message-content {
@@ -168,15 +218,15 @@ export default {
     color: black;
     text-align: right;
     border-top-right-radius: 0;
-    border: 1px solid #d9d5d5;
-
+    border: 1px solid #93b1f1;
 }
 
 .ai .message-content {
+    min-width: 50%;
     background: white;
     color: black;
     border-top-left-radius: 0;
-    border: 1px solid #d9d5d5;
+    border: 1px solid #93b1f1;
 }
 
 .hljs {
@@ -189,78 +239,18 @@ export default {
     line-height: 1.6;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border: 1px solid #444;
-    /* 边框 */
-    padding: 40px;
-    /* 这里是 hljs 的 padding */
+    padding: 12px;
 }
 
-.hljs code {
-    white-space: pre-wrap;
-    /* 使代码块可以换行 */
-    word-wrap: break-word;
-}
-
-pre.hljs {
-    padding: 12px 2px 12px 40px !important;
-    border-radius: 5px !important;
-    position: relative;
-    font-size: 14px !important;
-    line-height: 22px !important;
-    overflow: hidden !important;
-
-    code {
-        display: block !important;
-        margin: 0 10px !important;
-        overflow-x: auto !important;
-    }
-
-    .line-numbers-rows {
-        position: absolute;
-        pointer-events: none;
-        top: 12px;
-        bottom: 12px;
-        left: 0;
-        font-size: 100%;
-        width: 40px;
-        text-align: center;
-        letter-spacing: -1px;
-        border-right: 1px solid rgba(0, 0, 0, .66);
-        user-select: none;
-        counter-reset: linenumber;
-
-        span {
-            pointer-events: none;
-            display: block;
-            counter-increment: linenumber;
-
-            &:before {
-                content: counter(linenumber);
-                color: #999;
-                display: block;
-                text-align: center;
-            }
-        }
-    }
-
-    b.name {
-        position: absolute;
-        top: 2px;
-        right: 50px;
-        z-index: 10;
-        color: #999;
-        pointer-events: none;
-    }
-
-    .copy-btn {
-        position: absolute;
-        top: 2px;
-        right: 4px;
-        z-index: 10;
-        color: #333;
-        cursor: pointer;
-        background-color: #fff;
-        border: 0;
-        border-radius: 2px;
-    }
+.copy-btn {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    z-index: 10;
+    color: #333;
+    cursor: pointer;
+    background-color: #fff;
+    border: 0;
+    border-radius: 2px;
 }
 </style>

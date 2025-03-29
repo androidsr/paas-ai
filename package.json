@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@antv/g2plot": "^2.4.32"
+  }
+}

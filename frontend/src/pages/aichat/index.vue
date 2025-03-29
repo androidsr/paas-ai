@@ -32,7 +32,7 @@
               <a-button size="small" @click="clean" title="清空对话">
                 <ClearOutlined />
               </a-button>
-              <a-popover placement="rightBottom" trigger="click" v-model:open="showSetting">
+              <a-popover placement="rightBottom" trigger="click">
                 <template #content>
                   <div>
                     <a-form style="max-height: 75vh;overflow: auto;" :label-col="{ style: { width: '80px' } }">
@@ -115,7 +115,7 @@
         </a-row>
         <a-row style="margin-top: 10px;">
           <a-col :flex="1">
-            <a-textarea type="text" placeholder="Enter发送" rows="3" v-model:value="message"
+            <a-textarea type="text" placeholder="Enter发送" :rows="3" v-model:value="message"
               @keydown.enter.prevent="sendMessage" :loading="loadingSend" style="resize: none; " />
           </a-col>
         </a-row>
