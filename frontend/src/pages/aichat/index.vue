@@ -4,7 +4,7 @@
       <a-col :span="24">
         <a-row>
           <div :style="'width:100%;height:100%;border: 1px solid #e9e9e9;'">
-            <Message :messages="$store.chats.result"  ref="msgView" />
+            <Message :messages="$store.chats.result" ref="msgView" />
             <!-- 
             <md-preview :modelValue="result" :codeFoldable="false" :preview-theme="'github'" :theme="'light'">
             </md-preview> -->
@@ -325,9 +325,10 @@ export default {
             this.models.push({ label: item, value: item });
           });
           this.model = this.models[0].value;
-
         } else {
-          this.$message.error("获取设置失败！");
+          this.$router.push({
+            path: "/config"
+          });
         }
       });
     },

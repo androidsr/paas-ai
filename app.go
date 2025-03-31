@@ -36,7 +36,7 @@ func (a *App) SetConfig(config *entity.Config) model.HttpResult {
 	db := mapper.NewHelper[entity.Config]()
 	err := db.SaveOrUpdate(config).Error
 	if err != nil {
-		return model.NewFailDefault("设置参数失败")
+		return model.NewFailDefault("参数未配置，请先前往渠道设置配置好ApiKey。然后设置选择默认模型")
 	}
 	return model.NewOK(nil)
 }
@@ -47,7 +47,7 @@ func (a *App) GetConfig() model.HttpResult {
 	data.Id = "1"
 	err := db.SelectOne(data)
 	if err != nil {
-		return model.NewFailDefault("设置参数失败")
+		return model.NewFailDefault("参数未配置，请先前往渠道设置配置好ApiKey。然后设置选择默认模型")
 	}
 	if data.LegalStatement == "1" {
 		biz.LoadConfig()

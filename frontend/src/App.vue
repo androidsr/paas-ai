@@ -87,6 +87,10 @@ export default {
     GetConfig().then((res) => {
       if (res.code == 200) {
         this.config = res.data;
+      } else {
+        this.$router.push({
+          path: "/config"
+        });
       }
     })
   },
