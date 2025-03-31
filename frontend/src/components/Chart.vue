@@ -1,6 +1,7 @@
 <template>
     <div>
         <div ref="chartContainer" class="echarts-chart"></div>
+        <div><a-button type="link" block @click="changeChart" :disabled="isDisabled">更换图表</a-button></div>
     </div>
 </template>
 
@@ -19,20 +20,29 @@ export default {
             this.renderChart();  // 初始化时渲染图表
         });
     },
+    data() {
+        return {
+            isDisabled: false,
+        }
+    },
     methods: {
+        changeChart() {
+            this.isDisabled = true;
+            let message = "这是一个echarts图表的JSON配置数据,请给我更新一种展现方式,并使用md代码块输出，语言类型为：chart。\n不要输出额外的信息。 图表json数据：" + JSON.stringify(this.chartData);
+            this.$bus.emit("changeChart", message);
+            setTimeout(() => {
+                this.isDisabled = false;
+            }, 3000);
+        },
         renderChart() {
             if (!this.$refs.chartContainer || !this.chartData) return;
 
-            // **销毁旧实例，避免重叠**
             if (this.chartInstance) {
                 this.chartInstance.dispose();
                 this.chartInstance = null;
             }
 
-            // **初始化 ECharts 实例**
             this.chartInstance = echarts.init(this.$refs.chartContainer);
-
-            // **使用后台传递的完整配置进行渲染**
             this.chartInstance.setOption(this.chartData);
         }
     },

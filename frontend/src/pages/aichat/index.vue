@@ -188,6 +188,26 @@ export default {
     });
     this.getImage();
     window.addEventListener('resize', this.handleResize)
+    this.$bus.on("changeChart", (data) => {
+      if (this.isLoading) {
+        return;
+      }
+      message.info("生成中...");
+      const oldSystem = this.system;
+      this.system = data;
+      const oldChatType = this.chatType;
+      this.chatType = "1";
+      this.message = "更换图表";
+      this.settingOk();
+      this.sendMessage();
+      this.chatType = oldChatType;
+      this.system = oldSystem;
+      this.message = "";
+      this.settingOk();
+    });
+  },
+  beforeUnmount() {
+    this.$bus.off('changeChart');
   },
   data() {
     return {
@@ -410,6 +430,7 @@ export default {
           temperature: (this.temperature * 0.1).toFixed(2),
           topK: (this.topK * 0.1).toFixed(2),
           topP: (this.topP * 0.1).toFixed(2),
+          result: [],
         });
         var endData;
         var url = "http://localhost:11083";
@@ -457,7 +478,9 @@ export default {
           },
           onclose() {
             m.isLoading = false;
-            m.$refs.msgView.renderAll();
+            setTimeout(() => {
+              m.$refs.msgView.renderAll();
+            }, 500);
             message.success("处理完成！");
             m.ctrl.abort();
           },
