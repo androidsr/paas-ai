@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
+import mitt from "mitt";
 
 const useStore = defineStore('store', {
     persist: {
         enabled: true,
     },
     state: () => ({
+        bus: mitt(),
         chats: {
             chatType: "1",
             stream: true,
@@ -28,7 +30,7 @@ const useStore = defineStore('store', {
         modeType: "1",
         channel: null,
         isAbout: true,
-        loading: true,
+        loading: false,
         forms: {
             action: "",
         },
@@ -39,6 +41,9 @@ const useStore = defineStore('store', {
 
     },
     actions: {
+        setLoading(value) {
+            this.loading = value;
+        },
         setAction(value) {
             this.forms.action = value;
         },

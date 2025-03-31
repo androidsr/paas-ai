@@ -197,6 +197,7 @@ func init() {
 		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1889297593876353024, '硅基流动', 'https://api.siliconflow.cn/v1', '', 6, 'deepseek-ai/DeepSeek-R1-Distill-Llama-70B,deepseek-ai/DeepSeek-R1,deepseek-ai/DeepSeek-R1-Distill-Qwen-32B,deepseek-ai/DeepSeek-R1-Distill-Qwen-14B,deepseek-ai/DeepSeek-R1-Distill-Llama-8B,deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B,Pro/deepseek-ai/DeepSeek-R1-Distill-Llama-8B,Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B,Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B', -1, '大模型token申请地址：
 		https://cloud.siliconflow.cn/account/ak', 'https://cloud.siliconflow.cn/models');
 		INSERT INTO "ai_channel" ("id", "name", "url", "token", "priority", "models", "max_token", "remark", "original_url") VALUES (1891785744574320640, 'ChatGPT', 'https://chat.openai.com/chat', '1', 1, '1', -1, '', 'https://chat.openai.com/chat');
+		INSERT INTO "prompt" ("id", "role_name", "prompt") VALUES (1905871069902802944, '图表生成器', '根据问题收集数据，或根据提供的数据；将其转换成echarts的json数据。要求以md代码块的形式输出，并设置语言类型为：chart。');
 	`)
 	LoadConfig()
 	fmt.Println("初始化数据库成功！")

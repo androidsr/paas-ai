@@ -1,7 +1,7 @@
 <template>
     <div>
         <div ref="chartContainer" class="echarts-chart"></div>
-        <div><a-button type="link" block @click="changeChart" :disabled="isDisabled">更换图表</a-button></div>
+        <a-flex align="center" justify="center"><a-button type="link" @click="changeChart" :disabled="$store.loading">换一个</a-button></a-flex>
     </div>
 </template>
 
@@ -27,11 +27,11 @@ export default {
     },
     methods: {
         changeChart() {
-            this.isDisabled = true;
+            this.$store.setLoading(true);
             let message = "这是一个echarts图表的JSON配置数据,请给我更新一种展现方式,并使用md代码块输出，语言类型为：chart。\n不要输出额外的信息。 图表json数据：" + JSON.stringify(this.chartData);
-            this.$bus.emit("changeChart", message);
+            this.$store.bus.emit("changeChart", message);
             setTimeout(() => {
-                this.isDisabled = false;
+                this.$store.setLoading(false);
             }, 3000);
         },
         renderChart() {

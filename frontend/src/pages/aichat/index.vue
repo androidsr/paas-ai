@@ -188,10 +188,7 @@ export default {
     });
     this.getImage();
     window.addEventListener('resize', this.handleResize)
-    this.$bus.on("changeChart", (data) => {
-      if (this.isLoading) {
-        return;
-      }
+    this.$store.bus.on("changeChart", (data) => {
       message.info("生成中...");
       const oldSystem = this.system;
       this.system = data;
