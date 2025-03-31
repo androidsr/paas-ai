@@ -8,8 +8,7 @@
                     <MdContent :renderedMessage="item.renderedMessage" :key="'content_' + item.id"
                         :ref="'content_' + item.id"></MdContent>
                     <div v-if="item.type === 'ai'">
-                        <a class="copy-message" @click="copyMessage(item.message)"
-                            v-if="item.message.length > 0">复制</a>
+                        <a class="copy-message" @click="copyMessage(item.message)" v-if="item.message.length > 0">复制</a>
                     </div>
                 </div>
             </div>
@@ -18,7 +17,7 @@
 </template>
 
 <script>
-import G2PlotChart from "@/components/G2PlotChart.vue";
+import Chart from "@/components/Chart.vue";
 import MdContent from "@/components/MdContent.vue";
 import Clipboard from 'clipboard';
 import hljs from "highlight.js";
@@ -29,7 +28,7 @@ import { createVNode, defineComponent, h, render } from 'vue';
 
 export default defineComponent({
     components: {
-        G2PlotChart,
+        Chart,
         MdContent,
     },
     props: {
@@ -118,17 +117,13 @@ export default defineComponent({
         },
 
         highlightCode(str, lang) {
-            if (lang === "g2plot") {
+            if (lang === "chart") {
                 try {
                     const data = JSON.parse(str);
-                    const chartId = `g2plot-${this.messages.length}`;
-                    if (data.type === 'Column' && !!data.label.content) {
-                        delete data.label.content;
-                        data.label.position = 'top';
-                    }
-                    return `<div class="g2plot-chart-container" data-chart-id="${chartId}" data-chart-data='${JSON.stringify(data)}'></div>`;
+                    const chartId = `chart-${this.messages.length}`;
+                    return `<div class="chart-container" data-chart-id="${chartId}" data-chart-data='${JSON.stringify(data)}'></div>`;
                 } catch (error) {
-                    return '图表加载中...';
+                    return '...';
                 }
             }
             // 生成唯一的代码块 ID
@@ -150,6 +145,12 @@ export default defineComponent({
             this.isRendering = false;
             this.renderVueComponents();
         },
+        capitalizeFirstLetter(str) {
+            if (typeof str !== 'string' || str.length === 0) {
+                return str;
+            }
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
         renderVueComponents() {
             if (this.isRendering) return; // 如果正在渲染中，跳过这次渲染
             this.isRendering = true;
@@ -165,9 +166,9 @@ export default defineComponent({
                     : [this.$refs.messageContainer];
 
                 messageContainers.forEach((container) => {
-                    container.querySelectorAll('.g2plot-chart-container').forEach((el) => {
+                    container.querySelectorAll('.chart-container').forEach((el) => {
                         const chartData = JSON.parse(el.dataset.chartData);
-                        const chartId = el.dataset.chartId;///"g2plot-" + this.messages.length;
+                        const chartId = el.dataset.chartId;///"chart-" + this.messages.length;
                         const existingChart = this.$refs[chartId];
                         if (existingChart && existingChart.chartId == chartId) {
                             return; // 数据未变化，不重新渲染
@@ -177,7 +178,7 @@ export default defineComponent({
 
                         // 更新 chartData
                         this.$nextTick(() => {
-                            const chartVNode = h(G2PlotChart, {
+                            const chartVNode = h(Chart, {
                                 chartData,
                                 key: chartId,  // 使用 chartId 作为 key 来保证更新时唯一性
                                 ref: chartId,  // 给每个图表元素加一个 ref 用来缓存
@@ -204,7 +205,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    height: 73vh;
+    height: 77vh;
 }
 
 .chat-box {
@@ -245,7 +246,7 @@ export default defineComponent({
 }
 
 .ai .message-content {
-    min-width: 50%;
+    min-width: 70%;
     background: white;
     color: black;
     border-top-left-radius: 0;
