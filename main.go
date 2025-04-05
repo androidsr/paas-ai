@@ -14,9 +14,6 @@ import (
 var assets embed.FS
 
 func main() {
-	/* if !toolkit.Signature("10-F6-0A-AD-A3-81,04-42-1A-D7-FE-8B", "2025-03-01") {
-		return
-	} */
 	dbBiz := biz.NewDbConfigBiz()
 	fwBiz := biz.NewFwConfigBiz()
 	functionBiz := biz.NewFunctionBiz()
@@ -66,20 +63,4 @@ func main() {
 	if err != nil {
 		println("Error:", err.Error())
 	}
-	//systray.Run(onReady, onExit)
-
 }
-
-/*
-func onReady() {
-	systray.SetIcon(icon.Data)
-	systray.SetTitle("那个谁AI桌面端")
-	systray.SetTooltip("那个谁AI桌面端")
-	mQuit := systray.AddMenuItem("退出", "点击退出")
-	mQuit.SetIcon(icon.Data)
-}
-
-func onExit() {
-	os.Exit(0)
-}
-*/

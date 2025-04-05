@@ -1,25 +1,15 @@
 <template>
     <div>
-        <a-page-header style="border: 1px solid rgb(235, 237, 240); padding: 8px; margin: 0;" title="数据库连接配置"
+        <a-page-header style="border: 1px solid rgb(235, 237, 240); padding: 8px; margin: 0;" title="流程管理"
             @back="back" />
         <a-card>
             <a-form :model="model" :rules="vRules" :label-col="{ style: { width: '90px' } }">
-                <a-form-item label="数据库类型" name="dbType">
-                    <a-input v-model:value="model.dbType" :readonly="isReadOnly" placeholder="mysql" />
+                <a-form-item label="流程名称" name="name">
+                    <a-input v-model:value="model.name" :readonly="isReadOnly" />
                 </a-form-item>
-                <a-form-item label="数据库名称" name="dbname">
-                    <a-input v-model:value="model.dbname" :rows="25" :readonly="isReadOnly" />
+                <a-form-item label="流程描述" name="remark">
+                    <a-textarea v-model:value="model.remark" :readonly="isReadOnly" />
                 </a-form-item>
-                <a-form-item label="连接地址" name="url">
-                    <a-input v-model:value="model.url" :readonly="isReadOnly" />
-                </a-form-item>
-                <a-form-item label="账户名称" name="username">
-                    <a-input v-model:value="model.username" :rows="25" :readonly="isReadOnly" />
-                </a-form-item>
-                <a-form-item label="账户密码" name="password">
-                    <a-input v-model:value="model.password" :rows="25" :readonly="isReadOnly" />
-                </a-form-item>
-
             </a-form>
 
             <template #actions v-if="!isReadOnly">
@@ -33,7 +23,7 @@
 </template>
 
 <script>
-import { Add, Edit, Get } from '../../../wailsjs/go/biz/DbconfigBiz.js';
+import { Add, Edit, Get } from '../../../wailsjs/go/biz/FwConfigBiz.js';
 
 export default {
     mounted() {
@@ -50,14 +40,9 @@ export default {
         return {
             id: "",
             model: {
-                url: "root:password@tcp(127.0.0.1:3306)/dbname?charset=utf8",
             },
             vRules: {
-                dbType: [{ required: true, message: "请输入数据库类型" }],
-                dbname: [{ required: true, message: "请输入数据库名称" }],
-                url: [{ required: true, message: "请输入连接地址" }],
-                username: [{ required: true, message: "请输入账户名称" }],
-                password: [{ required: true, message: "请输入账户密码" }],
+                name: [{ required: true, message: "请输入流程名称" }],
             },
         }
     },

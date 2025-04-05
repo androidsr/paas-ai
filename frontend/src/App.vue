@@ -25,37 +25,34 @@
             <CommentOutlined />&nbsp;&nbsp;&nbsp;AI对话
           </a-menu-item>
           <a-menu-item key="/prompt">
-            <IdcardOutlined />&nbsp;&nbsp;&nbsp;提示词管理
+            <UserOutlined />&nbsp;&nbsp;&nbsp;提示词管理
           </a-menu-item>
           <a-menu-item key="/collection">
-            <ProfileOutlined />&nbsp;&nbsp;&nbsp;集合管理
+            <FolderOpenOutlined />&nbsp;&nbsp;&nbsp;空间管理
           </a-menu-item>
           <a-menu-item key="/document">
-            <FileWordOutlined />&nbsp;&nbsp;&nbsp;文档管理
+            <FileSearchOutlined />&nbsp;&nbsp;&nbsp;文档管理
           </a-menu-item>
           <a-menu-item key="/function">
-            <FunctionOutlined />&nbsp;&nbsp;&nbsp;函数定义
-          </a-menu-item>
-          <a-menu-item key="/func-impl">
-            <ApiOutlined />&nbsp;&nbsp;&nbsp;函数实现
+            <ToolOutlined />&nbsp;&nbsp;&nbsp;工具管理
           </a-menu-item>
           <a-menu-item key="/dbconfig">
-            <ConsoleSqlOutlined />&nbsp;&nbsp;&nbsp;数据库管理
+            <DatabaseOutlined />&nbsp;&nbsp;&nbsp;数据源管理
           </a-menu-item>
           <a-menu-item key="/flow">
-            <ApartmentOutlined />&nbsp;&nbsp;&nbsp;流程管理
+            <ForkOutlined />&nbsp;&nbsp;&nbsp;流程管理
           </a-menu-item>
           <a-menu-item key="/aichannel">
-            <CloudOutlined />&nbsp;&nbsp;&nbsp;渠道管理
+            <GlobalOutlined />&nbsp;&nbsp;&nbsp;接入管理
           </a-menu-item>
           <a-menu-item key="/config">
             <SettingOutlined />&nbsp;&nbsp;&nbsp;设置
           </a-menu-item>
+          <a-menu-item key="/modeType">
+            <ChromeOutlined />&nbsp;&nbsp;&nbsp;切换模式
+          </a-menu-item>
           <a-menu-item key="/about">
             <InfoCircleOutlined />&nbsp;&nbsp;&nbsp;关于
-          </a-menu-item>
-          <a-menu-item key="/modeType">
-            <RetweetOutlined />&nbsp;&nbsp;&nbsp;切换模式
           </a-menu-item>
         </a-menu>
       </a-layout-sider>

@@ -67,7 +67,7 @@ export default {
     },
     methods: {
         pageClick(pagination) {
-            this.page = pagination;
+            this.pages = pagination;
             this.loadPage();
         },
         customRow(record) {

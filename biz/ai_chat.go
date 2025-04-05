@@ -13,7 +13,6 @@ import (
 	"paas-ai/entity"
 	"paas-ai/toolkit"
 	"path/filepath"
-	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -218,27 +217,6 @@ func (m AiChat) Text(c *gin.Context) {
 		options = append(options, llms.WithJSONMode())
 	}
 	message := input.Message
-	urlRegex := regexp.MustCompile(`\bhttps?://\S+\b`)
-	urls := urlRegex.FindAllString(message, -1)
-	if len(urls) != 0 {
-		browser, err := toolkit.NewBrowser(cfg)
-		if err == nil {
-			for _, url := range urls {
-				browser.NewPage(url)
-				data, err := browser.GetLinkContent("body", "text")
-				context := bytes.Buffer{}
-				for _, v := range data {
-					context.WriteString(v.(string))
-				}
-				if err != nil {
-					message = strings.Replace(message, url, "", 1)
-				} else {
-					message = strings.Replace(message, url, context.String(), 1)
-				}
-			}
-			browser.Close()
-		}
-	}
 	chat, err := toolkit.NewOpenAI(channel.Url, channel.Token, input.Model)
 	if err != nil {
 		sendMessage(c.Writer, []byte("模型连接失败"))

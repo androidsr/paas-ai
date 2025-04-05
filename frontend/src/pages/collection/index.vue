@@ -93,7 +93,7 @@ export default {
             });
         },
         pageClick(pagination) {
-            this.page = pagination;
+            this.pages = pagination;
             this.getList();
         },
         customRow(record) {

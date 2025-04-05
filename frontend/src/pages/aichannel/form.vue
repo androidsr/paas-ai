@@ -26,7 +26,7 @@
                     <a-input-number v-model:value="model.maxToken" :readonly="isReadOnly" />
                 </a-form-item>
                 <a-form-item label="备注" name="remark">
-                    <a-textarea v-model:value="model.remark" rows="4" :readonly="isReadOnly" />
+                    <a-textarea v-model:value="model.remark" :rows="4" :readonly="isReadOnly" />
                 </a-form-item>
             </a-form>
 

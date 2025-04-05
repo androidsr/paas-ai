@@ -62,7 +62,7 @@ export default {
     },
     methods: {
         pageClick(pagination) {
-            this.page = pagination;
+            this.pages = pagination;
             this.loadPage();
         },
         customRow(record) {
@@ -84,6 +84,7 @@ export default {
                 let data = res.data || {};
                 if (res.code == 200) {
                     this.records = data.rows;
+                    this.pages.total = data.total;
                 } else {
                     this.$message.error(res.msg)
                 }

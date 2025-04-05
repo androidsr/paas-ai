@@ -8,7 +8,7 @@
                     <a-input v-model:value="model.roleName" :readonly="isReadOnly" />
                 </a-form-item>
                 <a-form-item label="提示词内容" name="prompt">
-                    <a-textarea v-model:value="model.prompt" rows="15" :readonly="isReadOnly" />
+                    <a-textarea v-model:value="model.prompt" :rows="15" :readonly="isReadOnly" />
                 </a-form-item>
             </a-form>
 

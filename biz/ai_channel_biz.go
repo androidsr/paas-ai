@@ -1,6 +1,7 @@
 package biz
 
 import (
+	"fmt"
 	"log"
 	"paas-ai/entity"
 
@@ -80,6 +81,7 @@ func (m *AiChannelBiz) Page(query *AiChannelQuery) model.HttpResult {
 	b := sbuilder.StructToBuilder(query, sql)
 	sql, values := b.Build()
 	sql += " order by priority,id desc "
+	fmt.Println(query.Page)
 	result := m.db.SelectPage(&data, query.Page, sql, values...)
 	return model.NewOK(result)
 }

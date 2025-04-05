@@ -204,7 +204,7 @@ export default {
     });
   },
   beforeUnmount() {
-    this.$bus.off('changeChart');
+    this.$store.bus.off('changeChart');
   },
   data() {
     return {
@@ -492,11 +492,6 @@ export default {
     },
     clearLogs() {
       this.logs = "";
-      /* this.$get("/chat/cleanLogs").then(res => {
-        if (res.data.code != this.$success) {
-          message.error(res.data.msg);
-        }
-      }); */
     },
     getSystemDatas() {
       PromptList().then(res => {

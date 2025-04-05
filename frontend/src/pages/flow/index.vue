@@ -5,8 +5,7 @@
                 <a-button @click="add">
                     <PlusOutlined />新增
                 </a-button>
-                <a-input placeholder="实现标题" v-model:value="query.title"></a-input>
-                <a-input placeholder="函数名称" v-model:value="query.name"></a-input>
+                <a-input placeholder="流程名称" v-model:value="query.name"></a-input>
                 <a-button @click="queryData">
                     <SearchOutlined />查询
                 </a-button>
@@ -15,11 +14,11 @@
         <a-divider style="margin-top: 10px;margin-bottom: 10px;" />
         <div>
             <a-table ref="table" :data-source="records" :columns="columns" @change="pageClick" :pagination="pages"
-                row-key="id" :scroll="{ x: 300, y: 500 }" :customRow="customRow">
+                row-key="id" :scroll="{ x: 300, y: 500 }">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'action'">
                         <a-space warp>
-                            <a key="list-loadmore-more" @click="copy(record)">复制</a>
+                            <a key="list-loadmore-more" @click="config(record)">配置</a>
                             <a key="list-loadmore-more" @click="detail(record)">查看</a>
                             <a key="list-loadmore-more" @click="edit(record)">编辑</a>
                             <a key="list-loadmore-more" @click="del(record)">删除</a>
@@ -32,12 +31,12 @@
 </template>
 <script>
 import { message, Modal } from 'ant-design-vue';
-import { Delete, Page } from '../../../wailsjs/go/biz/FunctionImplBiz.js';
+import { Delete, Page } from '../../../wailsjs/go/biz/FwConfigBiz.js';
 
 
 export default {
     mounted() {
-        this.query = this.$store.queryData["func-impl"] || {};
+        this.query = this.$store.queryData["flow"] || {};
         this.loadPage();
     },
     data() {
@@ -53,33 +52,16 @@ export default {
             records: [],
             record: {},
             columns: [
-                { title: "实现标题", dataIndex: "title", ellipsis: true },
-                { title: "函数名称", dataIndex: "name", ellipsis: true },
-                { title: "请求地址", dataIndex: "url", ellipsis: true },
-                { title: "请求方式", dataIndex: "method", ellipsis: true },
-                { title: "数据类型", dataIndex: "contentType", ellipsis: true },
+                { title: "流程名称", dataIndex: "name" },
+                { title: "流程描述", dataIndex: "remark" },
                 { title: '操作', key: 'action', fixed: 'right', width: 180 }
             ],
         };
     },
     methods: {
         pageClick(pagination) {
-            this.page = pagination;
+            this.pages = pagination;
             this.loadPage();
-        },
-        customRow(record) {
-            return {
-                onClick: (event) => {
-
-                },
-                onDblclick: (event) => {
-                    message.success("选中行新增")
-                    this.record = record;
-                },
-                onContextmenu: (event) => { },
-                onMouseenter: (event) => { },  // 鼠标移入行
-                onMouseleave: (event) => { }
-            };
         },
         loadPage() {
             Page({ page: this.pages, ...this.query }).then(res => {
@@ -92,7 +74,7 @@ export default {
             })
         },
         queryData() {
-            this.$store.setQueryData("func-impl", this.query);
+            this.$store.setQueryData("flow", this.query);
             this.pages.current = 1;
             this.records = [];
             this.loadPage();
@@ -100,17 +82,26 @@ export default {
         add(data) {
             this.$store.setAction("add");
             this.$router.push({
-                path: "/func-impl/form",
+                path: "/flow/form",
                 query: {
                     id: data.id,
                     system: this.activeKey,
                 },
             });
         },
+        config(data) {
+            this.$store.setAction("design");
+            this.$router.push({
+                path: "/flow/design",
+                query: {
+                    id: data.id,
+                },
+            });
+        },
         copy(data) {
             this.$store.setAction("add");
             this.$router.push({
-                path: "/func-impl/form",
+                path: "/flow/form",
                 query: {
                     id: data.id,
                 },
@@ -119,7 +110,7 @@ export default {
         edit(data) {
             this.$store.setAction("edit");
             this.$router.push({
-                path: "/func-impl/form",
+                path: "/flow/form",
                 query: {
                     id: data.id,
                 },
@@ -128,7 +119,7 @@ export default {
         detail(data) {
             this.$store.setAction("detail");
             this.$router.push({
-                path: "/func-impl/form",
+                path: "/flow/form",
                 query: {
                     id: data.id,
                 },

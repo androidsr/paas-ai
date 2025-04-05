@@ -16,7 +16,7 @@
                     <a-textarea v-model:value="model.metadata" :readonly="isReadOnly" />
                 </a-form-item>
                 <a-form-item label="文档内容" name="content">
-                    <a-textarea v-model:value="model.content" rows="10" :readonly="isReadOnly" />
+                    <a-textarea v-model:value="model.content" :rows="10" :readonly="isReadOnly" />
                 </a-form-item>
             </a-form>
 

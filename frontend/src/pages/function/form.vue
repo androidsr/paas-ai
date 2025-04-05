@@ -11,7 +11,7 @@
                     <a-select v-model:value="model.roleId" :options="systemDatas" :allowClear="true" :readonly="isReadOnly"/>
                 </a-form-item>
                 <a-form-item label="函数内容" name="funcContent">
-                    <a-textarea v-model:value="model.funcContent" rows="14" :readonly="isReadOnly" />
+                    <a-textarea v-model:value="model.funcContent" :rows="14" :readonly="isReadOnly" />
                 </a-form-item>
             </a-form>
 
