@@ -16,7 +16,7 @@ const useStore = defineStore('store', {
             topP: 7.5,
             sourceType: "1",
             cacheLimit: 6,
-            cnAnswer: true,
+            cnAnswer: false,
             model: "",
             similarityScore: 7,
             result: [],

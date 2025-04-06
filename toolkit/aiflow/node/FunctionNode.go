@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"paas-ai/entity"
 	"paas-ai/toolkit"
 	"paas-ai/toolkit/aiflow/properties"
@@ -64,7 +65,7 @@ func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emit
 		utils.InputPrint(emitter, m.properties.Name, string(bs))
 	}
 	data, err := llm.GenerateFunction(context.Background(), "["+funcInfo.FuncContent+"]", func(fun *llms.FunctionCall) (bool, string, error) {
-		return false, "", nil //ExecFuncCall(fun)
+		return ExecFuncCall(fun)
 	}, nil)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
@@ -81,4 +82,70 @@ func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emit
 	}
 
 	return true
+}
+
+// 函数工具调用逻辑
+func ExecFuncCall(function *llms.FunctionCall) (bool, string, error) {
+	input := make(map[string]interface{}, 0)
+	err := json.Unmarshal([]byte(function.Arguments), &input)
+	if err != nil {
+		return true, "", errors.New("解析AI参数出错：" + err.Error())
+	}
+
+	switch function.Name {
+	case "getTables":
+		dbname, ok := input["dbname"].(string)
+		if dbname == "" || !ok {
+			return true, "", errors.New("无效函数，未找到dbname参数")
+		}
+		db := toolkit.NewDbName(dbname)
+		data, err := db.GetTables(dbname)
+		if err != nil {
+			return true, "", errors.New("查询数据库表信息出错：" + err.Error())
+		}
+		bs, err := json.Marshal(data)
+		if err != nil {
+			return true, "", errors.New("表信息转换JSON出错：" + err.Error())
+		}
+		return false, string(bs), nil
+	case "getTableDetail":
+		dbname, ok := input["dbname"].(string)
+		if dbname == "" || !ok {
+			return true, "", errors.New("无效函数，未找到dbname参数")
+		}
+		tableNames, ok := input["tableNames"].([]interface{})
+		if !ok {
+			return true, "", errors.New("无效函数，未找到tableNames参数")
+		}
+		db := toolkit.NewDbName(dbname)
+		data, err := db.GetTableDetail(dbname, tableNames)
+		if err != nil {
+			return true, "", errors.New("查询数据库表信息出错：" + err.Error())
+		}
+		bs, err := json.Marshal(data)
+		if err != nil {
+			return true, "", errors.New("表信息转换JSON出错：" + err.Error())
+		}
+		return false, string(bs), nil
+	case "queryExecSql":
+		dbname, ok := input["dbname"].(string)
+		if dbname == "" || !ok {
+			return true, "", errors.New("无效函数，未找到dbname参数")
+		}
+		sql, ok := input["sql"].(string)
+		if sql == "" || !ok {
+			return true, "", errors.New("无效函数，未找到sql参数")
+		}
+		db := toolkit.NewDbName(dbname)
+		data, err := db.QuerySql(sql)
+		if err != nil {
+			return true, "", errors.New("查询数据库表信息出错：" + err.Error())
+		}
+		bs, err := json.Marshal(data)
+		if err != nil {
+			return true, "", errors.New("表信息转换JSON出错：" + err.Error())
+		}
+		return false, string(bs), nil
+	}
+	return false, "", errors.New("未找到对应的函数内容")
 }

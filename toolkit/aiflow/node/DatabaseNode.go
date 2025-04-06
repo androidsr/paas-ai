@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"paas-ai/entity"
+	"paas-ai/toolkit"
 	"paas-ai/toolkit/aiflow/properties"
 	"paas-ai/toolkit/aiflow/utils"
 	"regexp"
 	"strings"
 
 	"github.com/androidsr/sc-go/mapper"
-	"gorm.io/gorm"
 )
 
 type DatabaseNode struct {
@@ -53,7 +53,7 @@ func (m *DatabaseNode) Execute(input map[string]any, output map[string]any, emit
 	}
 	sql := strings.ReplaceAll(m.properties.Sql, "$where", whereString)
 
-	result, err := m.querySql(db.DB, sql)
+	result, err := toolkit.NewDbSearch(data).QuerySql(sql)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, "执行SQL语句失败"+err.Error())
 		return false
@@ -73,32 +73,4 @@ func (m *DatabaseNode) Execute(input map[string]any, output map[string]any, emit
 		output[m.properties.ParameterName] = result
 	}
 	return true
-}
-
-func (m *DatabaseNode) querySql(db *gorm.DB, sql string) ([]map[string]string, error) {
-	rows, err := db.Exec(sql).Rows()
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	cols, _ := rows.Columns()
-	values := make([][]byte, len(cols))
-	scans := make([]interface{}, len(cols))
-	for i := range values {
-		scans[i] = &values[i]
-	}
-	results := make([]map[string]string, 0)
-	for rows.Next() {
-		err := rows.Scan(scans...)
-		if err != nil {
-			return nil, err
-		}
-		row := make(map[string]string, 0)
-		for k, v := range values {
-			key := cols[k]
-			row[key] = string(v)
-		}
-		results = append(results, row)
-	}
-	return results, nil
 }
