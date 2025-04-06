@@ -30,6 +30,16 @@ func (m *FwConfigBiz) Get(id string) model.HttpResult {
 	return model.NewOK(data)
 }
 
+func (m *FwConfigBiz) GetById(id string) *entity.FwConfig {
+	data := new(entity.FwConfig)
+	data.Id = id
+	err := m.db.SelectOne(data)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
 func (m *FwConfigBiz) Add(task *entity.FwConfig) model.HttpResult {
 	task.Id = sno.GetString()
 	err := m.db.Insert(task)

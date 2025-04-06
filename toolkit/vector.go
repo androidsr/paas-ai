@@ -85,5 +85,6 @@ func (m *Document) Query(queryText string, mResult int, metadata map[string]stri
 	if mResult > count {
 		mResult = count
 	}
-	return m.c.Query(context.Background(), queryText, mResult, metadata, nil)
+	ctx := context.Background()
+	return m.c.Query(ctx, queryText, mResult, metadata, nil)
 }

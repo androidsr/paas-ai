@@ -12,6 +12,8 @@ export function Edit(arg1:entity.FwConfig):Promise<model.HttpResult>;
 
 export function Get(arg1:string):Promise<model.HttpResult>;
 
+export function GetById(arg1:string):Promise<entity.FwConfig>;
+
 export function GetList():Promise<model.HttpResult>;
 
 export function Page(arg1:biz.FwConfigQuery):Promise<model.HttpResult>;

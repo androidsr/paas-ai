@@ -3,6 +3,7 @@ module paas-ai
 go 1.24.0
 
 require (
+	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/androidsr/sc-go v0.0.0-20250111150447-f1b36d257ac7
 	github.com/disintegration/imaging v1.6.2
 	github.com/gin-gonic/gin v1.10.0
@@ -13,6 +14,7 @@ require (
 	github.com/tmc/langchaingo v0.1.13
 	github.com/wailsapp/wails/v2 v2.9.3
 	github.com/xuri/excelize/v2 v2.9.0
+	gorm.io/gorm v1.25.12
 )
 
 require (
@@ -106,6 +108,5 @@ require (
 	gorm.io/driver/mysql v1.5.7 // indirect
 	gorm.io/driver/postgres v1.5.9 // indirect
 	gorm.io/driver/sqlite v1.5.6 // indirect
-	gorm.io/gorm v1.25.12 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
 )

@@ -144,6 +144,7 @@ import { GetList as CollectionList } from '../../../wailsjs/go/biz/CollectionBiz
 import { GetList as DocumentList } from '../../../wailsjs/go/biz/DocumentBiz.js';
 import { GetList as FunctionList } from '../../../wailsjs/go/biz/FunctionBiz.js';
 import { GetList as PromptList } from '../../../wailsjs/go/biz/PromptBiz.js';
+import { GetList as FwConfigList } from '../../../wailsjs/go/biz/FwConfigBiz.js';
 import { GetConfig } from '../../../wailsjs/go/main/App';
 import Message from '../../components/Message.vue';
 
@@ -520,14 +521,14 @@ export default {
       }
     },
     getFlowsList() {
-      /* this.$post("/fwconfig/list", { page: { current: 1, size: 1000 } }).then(res => {
-        if (res.data.code == this.$success) {
-          this.flows = res.data.data.rows;
+      FwConfigList().then(res => {
+        if (res.code == 200) {
+          this.flows = res.data;
         } else {
           this.flows = [];
           message.error(res.data.msg);
         }
-      }) */
+      })
     },
     getFilenameList(collectionName) {
       this.filenameList = [];

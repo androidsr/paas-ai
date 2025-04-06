@@ -12,6 +12,7 @@ import (
 	"paas-ai/dv"
 	"paas-ai/entity"
 	"paas-ai/toolkit"
+	"paas-ai/toolkit/aiflow"
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
@@ -350,15 +351,26 @@ func (m AiChat) Flow(c *gin.Context) {
 	input := new(FlowDTO)
 	c.BindJSON(input)
 
-	startData := make(map[string]any, 0)
-	startData["message"] = input.Message
-	/* service.NewFlowActuator(input.FlowId, func(data string, err error) {
-		if err != nil {
-			sendMessage(c.Writer, []byte(err.Error()))
-			return
+	fw := NewFwConfigBiz().GetById(input.FlowId)
+	engine := aiflow.NewEngine()
+	engine.SetInput("message", input.Message)
+	engine.LoadFromJson(fw.Content)
+	ch := make(chan string, 1)
+	defer close(ch)
+	go func() {
+		for {
+			select {
+			case msg, ok := <-ch:
+				if !ok {
+					continue
+				}
+				sendMessage(c.Writer, []byte(msg))
+			case <-c.Request.Context().Done():
+				return
+			}
 		}
-		sendMessage(c.Writer, []byte(data))
-	}).StartFlow(startData) */
+	}()
+	engine.Execute(ch)
 }
 
 // @Router [post] [/chat/file]

@@ -22,6 +22,10 @@ export function Get(arg1) {
   return window['go']['biz']['AiChannelBiz']['Get'](arg1);
 }
 
+export function GetById(arg1) {
+  return window['go']['biz']['AiChannelBiz']['GetById'](arg1);
+}
+
 export function GetList() {
   return window['go']['biz']['AiChannelBiz']['GetList']();
 }

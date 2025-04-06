@@ -14,6 +14,8 @@ export function FindByUrl(arg1:string):Promise<model.HttpResult>;
 
 export function Get(arg1:string):Promise<model.HttpResult>;
 
+export function GetById(arg1:string):Promise<entity.AiChannel>;
+
 export function GetList():Promise<model.HttpResult>;
 
 export function Page(arg1:biz.AiChannelQuery):Promise<model.HttpResult>;

@@ -31,6 +31,16 @@ func (m *AiChannelBiz) Get(id string) model.HttpResult {
 	return model.NewOK(data)
 }
 
+func (m *AiChannelBiz) GetById(id string) *entity.AiChannel {
+	data := new(entity.AiChannel)
+	data.Id = id
+	err := m.db.SelectOne(data)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
 func (m *AiChannelBiz) FindByUrl(url string) model.HttpResult {
 	data := new(entity.AiChannel)
 	data.Url = url
