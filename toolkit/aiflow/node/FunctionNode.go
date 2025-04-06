@@ -79,5 +79,6 @@ func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emit
 	if m.properties.ResultHistory {
 		output[m.properties.ParameterName] = data
 	}
+
 	return true
 }

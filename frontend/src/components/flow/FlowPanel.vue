@@ -33,7 +33,7 @@
 <style>
 .flowCanvas {
   position: relative;
-  height: 88vh;
+  height: 96vh;
   margin: 0px;
   display: flex;
 }
