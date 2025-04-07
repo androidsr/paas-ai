@@ -27,6 +27,7 @@ import (
 	"github.com/androidsr/sc-go/syaml"
 	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
+	"github.com/mark3labs/mcp-go/client"
 	"github.com/tmc/langchaingo/llms"
 )
 
@@ -328,6 +329,50 @@ func (m AiChat) Tools(c *gin.Context) {
 	result := bytes.Buffer{}
 	funcResult, err := chat.GenerateFunction(ctx, toolsContent, func(fun *llms.FunctionCall) (bool, string, error) {
 		return NewFunctionBiz().ExecFuncCall(fun)
+	}, func(ctx context.Context, chunk []byte) error {
+		result.Write(chunk)
+		sendMessage(c.Writer, chunk)
+		return nil
+	}, options...)
+
+	if err != nil {
+		sendMessage(c.Writer, []byte(err.Error()))
+		return
+	}
+
+	AddMessage(llms.ChatMessageTypeAI, result.String(), input.CacheLimit)
+	fmt.Println(funcResult)
+	sendMessage(c.Writer, []byte(funcResult))
+}
+
+// @Router [post] [/chat/mcp]
+func (m AiChat) Mcp(c *gin.Context) {
+	chatLock.Lock()
+	defer chatLock.Unlock()
+	input := new(ToolsDTO)
+	c.BindJSON(input)
+	options := settings(c, input.BaseDTO)
+	var toolsContent string
+	var cli client.MCPClient
+	if input.FuncCall != "" {
+		funcInfo := &entity.Function{}
+		funcInfo.Id = input.FuncCall
+		mapper.NewHelper[entity.Function]().SelectOne(funcInfo)
+		if funcInfo != nil {
+			cli, toolsContent = toolkit.GetToolsContent(1, funcInfo.FuncContent)
+		}
+	}
+	fmt.Println(toolsContent)
+	chat, err := toolkit.NewOpenAI(channel.Url, channel.Token, input.Model)
+	if err != nil {
+		sendMessage(c.Writer, []byte("模型连接失败"))
+		return
+	}
+	m.loadSystem(input.BaseDTO, chat)
+	chat.SetContent(AddMessage(llms.ChatMessageTypeHuman, input.Message, input.CacheLimit)...)
+	result := bytes.Buffer{}
+	funcResult, err := chat.GenerateFunction(ctx, toolsContent, func(fun *llms.FunctionCall) (bool, string, error) {
+		return toolkit.ExecTools(cli, fun.Name, fun.Arguments)
 	}, func(ctx context.Context, chunk []byte) error {
 		result.Write(chunk)
 		sendMessage(c.Writer, chunk)

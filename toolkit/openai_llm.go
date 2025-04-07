@@ -49,7 +49,6 @@ func (m *OpenAI) RemoveContent(index int) {
 func (m *OpenAI) GenerateFunction(ctx context.Context, toolsContent string, funcCallback func(fun *llms.FunctionCall) (bool, string, error), callback func(ctx context.Context, chunk []byte) error, options ...llms.CallOption) (string, error) {
 	if toolsContent != "" {
 		tools := make([]llms.Tool, 0)
-		fmt.Println(toolsContent)
 		err := json.Unmarshal([]byte(toolsContent), &tools)
 		if err != nil {
 			log.Printf("函数定义错误：%v\n", err)

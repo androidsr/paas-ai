@@ -47,6 +47,10 @@
                         <a-select v-model:value="chatType" :options="chatTypeData" @change="settingOk" />
                       </a-form-item>
 
+                      <a-form-item label="函数调用" v-if="chatType === '4' || chatType === '9'">
+                        <a-select v-model:value="funcCall" :options="funcs" :allowClear="true" @change="settingOk" />
+                      </a-form-item>
+
                       <a-form-item label="选择角色">
                         <a-select v-model:value="systemId" :options="systemDatas" :allowClear="true"
                           @change="settingOk" />
@@ -58,10 +62,6 @@
 
                       <a-form-item label="历史数量">
                         <a-input-number v-model:value="cacheLimit" style="width: 100%" @change="settingOk" />
-                      </a-form-item>
-
-                      <a-form-item label="函数调用" v-if="chatType === '4'">
-                        <a-select v-model:value="funcCall" :options="funcs" :allowClear="true" @change="settingOk" />
                       </a-form-item>
 
                       <a-form-item label="流程调用" v-if="chatType === '5'">
@@ -225,6 +225,7 @@ export default {
         { label: "向量库对话", value: "2" },
         { label: "文件对话", value: "3" },
         { label: "工具对话", value: "4" },
+        { label: "MCP对话", value: "9" },
         { label: "流程对话", value: "5" },
         { label: "图片对话", value: "6" },
         { label: "音频对话", value: "7" },
@@ -454,6 +455,12 @@ export default {
           case "7":
             message.info("功能开发中...")
             return;
+          case "8":
+            message.info("功能开发中...")
+            return;
+          case "9":
+            url += "/chat/mcp";
+            break;
         }
         fetchEventSource(url, {
           method: 'POST',
