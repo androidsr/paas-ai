@@ -65,7 +65,6 @@ func (e *LogicFlowEngine) Execute(emitter chan string) {
 	for len(queue) > 0 {
 		currentBatch := queue
 		queue = []string{}
-		fmt.Println(len(currentBatch))
 		for _, nodeId := range currentBatch {
 			nd := e.nodes[nodeId]
 			running[nodeId] = true

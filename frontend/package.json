@@ -19,7 +19,9 @@
     "lodash": "^4.17.21",
     "markdown-it": "^14.1.0",
     "markdown-it-link-attributes": "^4.0.1",
+    "mermaid": "^11.6.0",
     "paas-component-library": "^0.9.60",
+    "panzoom": "^9.4.3",
     "vue": "^3.2.37"
   },
   "devDependencies": {

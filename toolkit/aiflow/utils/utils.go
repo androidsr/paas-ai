@@ -31,6 +31,9 @@ func GetFlowParameter(input, output map[string]any, expression string) (string, 
 
 // getNestedValue 从嵌套的 map 中获取值
 func getNestedValue(data map[string]any, key string) (string, error) {
+	if key == "" || data == nil {
+		return "", nil
+	}
 	keys := strings.Split(key, ".")
 	current := data
 

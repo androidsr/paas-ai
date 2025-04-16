@@ -18,6 +18,8 @@
 
 <script>
 import Chart from "@/components/Chart.vue";
+import MermaidChat from "@/components/MermaidChat.vue";
+
 import MdContent from "@/components/MdContent.vue";
 import Clipboard from 'clipboard';
 import hljs from "highlight.js";
@@ -29,6 +31,7 @@ import { createVNode, defineComponent, h, render } from 'vue';
 export default defineComponent({
     components: {
         Chart,
+        MermaidChat,
         MdContent,
     },
     props: {
@@ -58,7 +61,6 @@ export default defineComponent({
         });
     },
     updated() {
-        //this.initClipboard();  // 重新绑定 Clipboard.js
         this.$nextTick(() => {
             this.renderVueComponents();
         });
@@ -125,8 +127,12 @@ export default defineComponent({
                 } catch (error) {
                     return '...';
                 }
+            } else if (lang === 'mermaid') {
+                const chartId = `mermaid-${this.messages.length}`;
+                const data = encodeURIComponent(str);
+                return `<div class="mermaid-container" data-chart-id="${chartId}" data-chart-data="${data}"></div>`;
             }
-            // 生成唯一的代码块 ID
+
             let codeId = `code-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
             let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" data-clipboard-action="copy" data-clipboard-target="#${codeId}">复制</a>`;
 
@@ -189,10 +195,39 @@ export default defineComponent({
                             vm.appContext = this.$.appContext; // 保证上下文一致
                             render(vm, chartElement); // 使用 render 渲染虚拟节点
                             chartContainer.appendChild(chartElement);
-                            this.isRendering = false;
+                        });
+                    });
+
+                    container.querySelectorAll('.mermaid-container').forEach((el) => {
+                        const chartData = el.dataset.chartData;
+                        const chartId = el.dataset.chartId;
+                        const existingChart = this.$refs[chartId];
+                        if (existingChart && existingChart.chartId == chartId) {
+                            return;
+                        }
+                        if (!chartData) {
+                            return;
+                        }
+                        const chartContainer = document.createElement('div');
+                        el.replaceWith(chartContainer);
+
+                        // 更新 chartData
+                        this.$nextTick(() => {
+                            const chartVNode = h(MermaidChat, {
+                                chartData,
+                                key: chartId,  // 使用 chartId 作为 key 来保证更新时唯一性
+                                ref: chartId,  // 给每个图表元素加一个 ref 用来缓存
+                            });
+
+                            const vm = createVNode(chartVNode); // 创建虚拟节点
+                            const chartElement = document.createElement('div');
+                            vm.appContext = this.$.appContext; // 保证上下文一致
+                            render(vm, chartElement); // 使用 render 渲染虚拟节点
+                            chartContainer.appendChild(chartElement);
                         });
                     });
                 });
+                this.isRendering = false;
             });
         },
     },
