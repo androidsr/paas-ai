@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"fmt"
 	"paas-ai/toolkit/aiflow/properties"
 	"paas-ai/toolkit/aiflow/utils"
 )
@@ -22,7 +23,9 @@ func (s *EndNode) ID() string {
 func (m *EndNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
 	messages := m.properties.Messages
 	result := make(map[string]any, 0)
+	fmt.Println(output)
 	for _, message := range messages {
+		fmt.Println(message.VarValue)
 		data := utils.ReplaceExpression(message.VarValue, input, output)
 		if message.VarName != "" {
 			result[message.VarName] = data

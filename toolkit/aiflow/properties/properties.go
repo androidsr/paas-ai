@@ -56,110 +56,110 @@ type LlmNodeProperties struct {
 
 type DatabaseNodeProperties struct {
 	// 参数名称
-	ParameterName string
+	ParameterName string `json:"parameterName"`
 	// 节点名称
-	Name string
+	Name string `json:"name"`
 	// 数据库ID
-	SourceId string
+	SourceId string `json:"sourceId"`
 	// 执行的SQL语句
-	Sql string
+	Sql string `json:"sql"`
 	// WHERE条件列表
-	Wheres []string
+	Wheres []string `json:"wheres"`
 	// 参数输入
-	Args string
+	Args string `json:"args"`
 	// 是否打印输入
-	PrintInput bool
+	PrintInput bool `json:"printInput"`
 	// 是否打印输出
-	PrintOutput bool
+	PrintOutput bool `json:"printOutput"`
 	// 是否保存输入
-	InputHistory bool
+	InputHistory bool `json:"inputHistory"`
 	// 是否保存输出
-	ResultHistory bool
+	ResultHistory bool `json:"resultHistory"`
 }
 
 // MessageItem 结构体
 type MessageItem struct {
 	// 变量名
-	VarName string
+	VarName string `json:"varName"`
 	// 变量值
-	VarValue string
+	VarValue string `json:"varValue"`
 }
 
 // EndNodeProperties 结构体
 type EndNodeProperties struct {
 	// 输出内容列表
-	Messages []MessageItem
+	Messages []MessageItem `json:"messages"`
 }
 
 type FunctionNodeProperties struct {
-	ParameterName string
-	Name          string
-	ChannelId     string
-	Model         string
-	FuncCall      string
-	Messages      []Message
-	PrintInput    bool
-	PrintOutput   bool
-	InputHistory  bool
-	ResultHistory bool
+	ParameterName string    `json:"parameterName"`
+	Name          string    `json:"name"`
+	ChannelId     string    `json:"channelId"`
+	Model         string    `json:"model"`
+	FuncCall      string    `json:"funcCall"`
+	Messages      []Message `json:"messages"`
+	PrintInput    bool      `json:"printInput"`
+	PrintOutput   bool      `json:"printOutput"`
+	InputHistory  bool      `json:"inputHistory"`
+	ResultHistory bool      `json:"resultHistory"`
 }
 
 type HttpNodeProperties struct {
-	ParameterName string
-	Name          string
-	Url           string
-	ContentType   string
-	Method        string
-	Headers       string
-	Cookies       string
-	Body          string
-	Expression    string
-	DataKey       string
-	PrintInput    bool
-	PrintOutput   bool
-	InputHistory  bool
-	ResultHistory bool
+	ParameterName string `json:"parameterName"`
+	Name          string `json:"name"`
+	Url           string `json:"url"`
+	ContentType   string `json:"contentType"`
+	Method        string `json:"method"`
+	Headers       string `json:"headers"`
+	Cookies       string `json:"cookies"`
+	Body          string `json:"body"`
+	Expression    string `json:"expression"`
+	DataKey       string `json:"dataKey"`
+	PrintInput    bool   `json:"printInput"`
+	PrintOutput   bool   `json:"printOutput"`
+	InputHistory  bool   `json:"inputHistory"`
+	ResultHistory bool   `json:"resultHistory"`
 }
 
 type LineProperties struct {
-	Name           string
-	StartCondition string
-	Expression     string
-	EndCondition   string
-	ForType        string
-	ForData        string
-	ForSize        int
+	Name           string `json:"name"`
+	StartCondition string `json:"startCondition"`
+	Expression     string `json:"expression"`
+	EndCondition   string `json:"endCondition"`
+	ForType        string `json:"forType"`
+	ForData        string `json:"forData"`
+	ForSize        int    `json:"forSize"`
 }
 
 type McpNodeProperties struct {
-	ParameterName string
-	Name          string
-	ChannelId     string
-	Model         string
-	McpType       int
-	Command       string
-	Messages      []Message
-	PrintInput    bool
-	PrintOutput   bool
-	InputHistory  bool
-	ResultHistory bool
+	ParameterName string    `json:"parameterName"`
+	Name          string    `json:"name"`
+	ChannelId     string    `json:"channelId"`
+	Model         string    `json:"model"`
+	McpType       int       `json:"mcpType"`
+	Command       string    `json:"command"`
+	Messages      []Message `json:"messages"`
+	PrintInput    bool      `json:"printInput"`
+	PrintOutput   bool      `json:"printOutput"`
+	InputHistory  bool      `json:"inputHistory"`
+	ResultHistory bool      `json:"resultHistory"`
 }
 
 type VectorNodeProperties struct {
-	ParameterName   string
-	Name            string
-	ChannelId       string
-	Model           string
-	CollectionId    string
-	Filename        string
-	Limit           int
-	SimilarityScore float32
-	Analyse         bool
-	System          string
-	Message         string
-	PrintInput      bool
-	PrintOutput     bool
-	InputHistory    bool
-	ResultHistory   bool
-	PrintComplete   bool
+	ParameterName   string  `json:"parameterName"`
+	Name            string  `json:"name"`
+	ChannelId       string  `json:"channelId"`
+	Model           string  `json:"model"`
+	CollectionId    string  `json:"collectionId"`
+	Filename        string  `json:"filename"`
+	Limit           int     `json:"limit"`
+	SimilarityScore float32 `json:"similarityScore"`
+	Analyse         bool    `json:"analyse"`
+	System          string  `json:"system"`
+	Message         string  `json:"message"`
+	PrintInput      bool    `json:"printInput"`
+	PrintOutput     bool    `json:"printOutput"`
+	InputHistory    bool    `json:"inputHistory"`
+	ResultHistory   bool    `json:"resultHistory"`
+	PrintComplete   bool    `json:"printComplete"`
 }

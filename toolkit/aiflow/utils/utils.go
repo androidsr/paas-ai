@@ -19,9 +19,8 @@ func GetFlowParameter(input, output map[string]any, expression string) (string, 
 		key = strings.TrimPrefix(expression, "$input.")
 	} else if strings.HasPrefix(expression, "$output.") && output != nil {
 		data = output
-		key = strings.TrimPrefix(key, "$output.")
+		key = strings.TrimPrefix(expression, "$output.")
 	}
-
 	if len(data) == 0 {
 		return "", nil
 	}
@@ -68,6 +67,7 @@ func MatchExpression(content string) []string {
 
 func ReplaceExpression(content string, input, output map[string]any) string {
 	exprs := MatchExpression(content)
+	fmt.Println(exprs)
 	for _, expr := range exprs {
 		value, err := GetFlowParameter(input, output, expr)
 		if err != nil {

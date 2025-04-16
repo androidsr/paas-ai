@@ -18,6 +18,7 @@ type LogicFlowEngine struct {
 	pendingPredecessor map[string]int
 	startNodeId        string
 	mu                 sync.Mutex
+	queue              *[]string
 }
 
 func NewEngine() *LogicFlowEngine {
@@ -58,40 +59,59 @@ func (engine *LogicFlowEngine) RegisterEdge(edge Edge) {
 
 func (e *LogicFlowEngine) Execute(emitter chan string) {
 	fmt.Println("开始执行流程")
-	var wg sync.WaitGroup
-	queue := []string{e.startNodeId}
-	running := make(map[string]bool)
 
-	for len(queue) > 0 {
-		currentBatch := queue
-		queue = []string{}
-		for _, nodeId := range currentBatch {
-			nd := e.nodes[nodeId]
-			running[nodeId] = true
+	// 每次执行时重置 pendingPredecessor
+	e.pendingPredecessor = map[string]int{}
+	for _, edges := range e.adjacencyList {
+		for _, edge := range edges {
+			e.pendingPredecessor[edge.TargetNodeId]++
+		}
+	}
+
+	var wg sync.WaitGroup
+	queue := make(chan string, 100)
+	active := make(chan struct{}, 100) // 用于追踪活跃的任务数（非阻塞控制）
+
+	queue <- e.startNodeId
+
+	for {
+		select {
+		case nodeId := <-queue:
+			active <- struct{}{} // 一个节点开始执行
 			wg.Add(1)
-			go func(nd node.Node) {
-				defer wg.Done()
+			go func(nodeId string) {
+				defer func() {
+					<-active // 一个节点执行完成
+					wg.Done()
+				}()
+				nd := e.nodes[nodeId]
 				ok := nd.Execute(e.input, e.output, emitter)
 				if !ok {
 					emitter <- fmt.Sprintf("节点 %s 执行失败，中断流程", nd.ID())
 					return
 				}
-				e.processNext(nd.ID(), &queue)
-			}(nd)
+				e.processNext(nodeId, queue)
+			}(nodeId)
+
+		default:
+			if len(queue) == 0 && len(active) == 0 {
+				wg.Wait()
+				close(emitter)
+				fmt.Println("流程执行完成")
+				return
+			}
 		}
-		wg.Wait()
 	}
-	close(emitter)
 }
 
-func (e *LogicFlowEngine) processNext(currentNodeId string, queue *[]string) {
+func (e *LogicFlowEngine) processNext(currentNodeId string, queue chan string) {
 	for _, edge := range e.adjacencyList[currentNodeId] {
 		if edge.EvaluateCondition(e.input) {
 			targetId := edge.TargetNodeId
 			e.mu.Lock()
 			e.pendingPredecessor[targetId]--
 			if e.pendingPredecessor[targetId] <= 0 {
-				*queue = append(*queue, targetId)
+				queue <- targetId // 不限制是否执行过
 			}
 			e.mu.Unlock()
 		}
