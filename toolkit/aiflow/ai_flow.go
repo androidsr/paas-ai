@@ -8,6 +8,7 @@ import (
 	"paas-ai/toolkit/aiflow/node"
 	"paas-ai/toolkit/aiflow/properties"
 	"sync"
+	"time"
 )
 
 // LogicFlowEngine 是主流程执行器，负责控制流程图中各节点的执行。
@@ -126,8 +127,7 @@ func (e *LogicFlowEngine) Execute(emitter chan string) {
 			return
 		}
 	}
-
-	log.Println("流程执行完成")
+	time.Sleep(1 * time.Second) // 确保所有输出都能被消费
 }
 
 // processNextNodes 决定当前节点完成后，下一个执行哪些节点
