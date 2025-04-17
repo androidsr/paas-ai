@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"paas-ai/toolkit/aiflow/properties"
 	"paas-ai/toolkit/aiflow/utils"
@@ -23,7 +24,7 @@ func (s *HttpNode) ID() string {
 	return s.NodeId
 }
 
-func (m *HttpNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *HttpNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	body := utils.ReplaceExpression(m.properties.Body, input, output)
 	url := strings.TrimSpace(m.properties.Url)
 	if m.properties.PrintInput && body != "" {
@@ -41,7 +42,7 @@ func (m *HttpNode) Execute(input map[string]any, output map[string]any, emitter 
 		err := json.Unmarshal([]byte(body), &params)
 		if err != nil {
 			utils.OutputError(emitter, m.properties.Name, err.Error())
-			return false
+			return errors.New("解析请求参数失败")
 		}
 	}
 	headers := make(map[string]string, 0)
@@ -71,7 +72,7 @@ func (m *HttpNode) Execute(input map[string]any, output map[string]any, emitter 
 	}
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("HTTP请求响应失败")
 	}
 
 	var result interface{}
@@ -110,5 +111,5 @@ func (m *HttpNode) Execute(input map[string]any, output map[string]any, emitter 
 	if m.properties.ResultHistory {
 		output[m.properties.ParameterName] = result
 	}
-	return true
+	return nil
 }

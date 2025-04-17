@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"paas-ai/entity"
 	"paas-ai/toolkit"
 	"paas-ai/toolkit/aiflow/properties"
@@ -25,7 +26,7 @@ func (s *LlmNode) ID() string {
 	return s.NodeId
 }
 
-func (m *LlmNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *LlmNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	db := mapper.NewHelper[entity.AiChannel]()
 	llmChannel := new(entity.AiChannel)
 	llmChannel.Id = m.properties.ChannelId
@@ -33,7 +34,7 @@ func (m *LlmNode) Execute(input map[string]any, output map[string]any, emitter c
 	llm, err := toolkit.NewOpenAI(llmChannel.Url, llmChannel.Token, m.properties.Model)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("调用大模型失败")
 	}
 
 	for _, v := range m.properties.Messages {
@@ -57,7 +58,7 @@ func (m *LlmNode) Execute(input map[string]any, output map[string]any, emitter c
 	resp, err := llm.GenerateCallback(context.Background(), nil)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("大模型响应失败")
 	}
 	data := resp.Choices[0].Content
 	if m.properties.PrintOutput {
@@ -69,5 +70,5 @@ func (m *LlmNode) Execute(input map[string]any, output map[string]any, emitter c
 	if m.properties.ResultHistory {
 		output[m.properties.ParameterName] = data
 	}
-	return true
+	return nil
 }

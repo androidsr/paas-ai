@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"paas-ai/toolkit/aiflow/properties"
 	"paas-ai/toolkit/aiflow/utils"
@@ -20,7 +21,7 @@ func (s *EndNode) ID() string {
 	return s.NodeId
 }
 
-func (m *EndNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *EndNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	messages := m.properties.Messages
 	result := make(map[string]any, 0)
 	fmt.Println(output)
@@ -37,9 +38,9 @@ func (m *EndNode) Execute(input map[string]any, output map[string]any, emitter c
 		jsonData, err := json.Marshal(result)
 		if err != nil {
 			utils.OutputError(emitter, "结束", "输出结果转换为JSON失败")
-			return false
+			return errors.New("输出结果转换为JSON失败")
 		}
 		utils.OutputPrint(emitter, string(jsonData))
 	}
-	return true
+	return nil
 }

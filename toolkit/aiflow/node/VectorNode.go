@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"paas-ai/entity"
 	"paas-ai/toolkit"
 	"paas-ai/toolkit/aiflow/properties"
@@ -26,7 +27,7 @@ func (s *VectorNode) ID() string {
 	return s.NodeId
 }
 
-func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	coll := toolkit.NewCollection()
 	c := coll.Get(m.properties.CollectionId)
 	ctx := context.Background()
@@ -40,7 +41,7 @@ func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitte
 	docs, err := doc.Query(message, m.properties.Limit, filter)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("检索向量库失败")
 	}
 	content := bytes.Buffer{}
 	for _, doc := range docs {
@@ -56,7 +57,7 @@ func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitte
 		if m.properties.PrintOutput {
 			utils.OutputPrint(emitter, text)
 		}
-		return true
+		return nil
 	}
 	db := mapper.NewHelper[entity.AiChannel]()
 	llmChannel := new(entity.AiChannel)
@@ -65,7 +66,7 @@ func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitte
 	llm, err := toolkit.NewOpenAI(llmChannel.Url, llmChannel.Token, m.properties.Model)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("调用大模型失败")
 	}
 	if m.properties.System != "" {
 		llm.SetContent(llms.TextParts(llms.ChatMessageTypeSystem, m.properties.System))
@@ -79,7 +80,7 @@ func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitte
 	resp, err := llm.GenerateCallback(ctx, nil)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("大模型响应失败")
 	}
 	data := resp.Choices[0].Content
 	if m.properties.PrintOutput {
@@ -91,5 +92,5 @@ func (m *VectorNode) Execute(input map[string]any, output map[string]any, emitte
 	if m.properties.ResultHistory {
 		output[m.properties.ParameterName] = data
 	}
-	return true
+	return nil
 }

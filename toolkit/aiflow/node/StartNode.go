@@ -18,7 +18,7 @@ func (s *StartNode) ID() string {
 	return s.NodeId
 }
 
-func (m *StartNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *StartNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	fmt.Println("执行开始节点", m.NodeId)
-	return true
+	return nil
 }

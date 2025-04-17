@@ -26,14 +26,14 @@ func (s *FunctionNode) ID() string {
 	return s.NodeId
 }
 
-func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	funcDb := mapper.NewHelper[entity.Function]()
 	funcInfo := new(entity.Function)
 	funcInfo.Id = m.properties.FuncCall
 	err := funcDb.SelectOne(funcInfo)
 	if err != nil {
-		utils.OutputError(emitter, m.properties.Name, "未找到对应的函数内容")
-		return false
+		utils.OutputError(emitter, m.properties.Name, "未找到对应的函数配置")
+		return errors.New("未找到对应的函数配置")
 	}
 
 	db := mapper.NewHelper[entity.AiChannel]()
@@ -43,7 +43,7 @@ func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emit
 	llm, err := toolkit.NewOpenAI(llmChannel.Url, llmChannel.Token, m.properties.Model)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("调用模型失败")
 	}
 
 	for _, v := range m.properties.Messages {
@@ -69,7 +69,7 @@ func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emit
 	}, nil)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, err.Error())
-		return false
+		return errors.New("调用函数响应失败")
 	}
 	if m.properties.PrintOutput {
 		utils.OutputPrint(emitter, data)
@@ -81,7 +81,7 @@ func (m *FunctionNode) Execute(input map[string]any, output map[string]any, emit
 		output[m.properties.ParameterName] = data
 	}
 
-	return true
+	return nil
 }
 
 // 函数工具调用逻辑

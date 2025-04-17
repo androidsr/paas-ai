@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"paas-ai/entity"
 	"paas-ai/toolkit"
@@ -26,14 +27,14 @@ func (s *DatabaseNode) ID() string {
 	return s.NodeId
 }
 
-func (m *DatabaseNode) Execute(input map[string]any, output map[string]any, emitter chan string) bool {
+func (m *DatabaseNode) Execute(input map[string]any, output map[string]any, emitter chan string) error {
 	db := mapper.NewHelper[entity.DbConfig]()
 	data := new(entity.DbConfig)
 	data.Id = m.properties.SourceId
 	err := db.SelectOne(data)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, "查询链接信息失败")
-		return false
+		return errors.New("查询链接信息失败")
 	}
 	var whereString string
 
@@ -56,7 +57,7 @@ func (m *DatabaseNode) Execute(input map[string]any, output map[string]any, emit
 	result, err := toolkit.NewDbSearch(data).QuerySql(sql)
 	if err != nil {
 		utils.OutputError(emitter, m.properties.Name, "执行SQL语句失败"+err.Error())
-		return false
+		return errors.New("执行SQL语句失败")
 	}
 	if m.properties.PrintOutput {
 		bs, err := json.Marshal(result)
@@ -72,5 +73,5 @@ func (m *DatabaseNode) Execute(input map[string]any, output map[string]any, emit
 	if m.properties.ResultHistory {
 		output[m.properties.ParameterName] = result
 	}
-	return true
+	return nil
 }

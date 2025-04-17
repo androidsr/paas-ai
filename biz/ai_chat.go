@@ -397,7 +397,7 @@ func (m AiChat) Flow(c *gin.Context) {
 	c.BindJSON(input)
 
 	fw := NewFwConfigBiz().GetById(input.FlowId)
-	engine := aiflow.NewEngine()
+	engine := aiflow.NewLogicFlowEngine()
 	engine.SetInput("message", input.Message)
 	engine.LoadFromJson(fw.Content)
 	ch := make(chan string, 1)
