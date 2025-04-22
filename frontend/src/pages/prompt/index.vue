@@ -13,7 +13,7 @@
         </div>
         <a-divider style="margin-top: 10px;margin-bottom: 10px;" />
         <div>
-            <a-table ref="table" :data-source="records" :columns="columns" @change="pageClick" :pagination="pages"
+            <a-table ref="table" :data-source="records" :columns="columns" @change="pageClick" :pagination="pages" size="middle"
                 row-key="id" :scroll="{ x: 300,  y: 500 }" :customRow="customRow">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'action'">
