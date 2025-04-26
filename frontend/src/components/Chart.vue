@@ -32,7 +32,9 @@ export default {
             this.$store.setLoading(true);
             let message = "这是一个echarts图表的JSON配置数据,请给我更新一种展现方式,不能改变我的数据内容。并使用md代码块输出，语言类型为：chart。\n不要输出额外的信息。 图表json数据：" + JSON.stringify(this.chartData);
             this.$bus.emit("changeChart", message);
-            this.$store.setLoading(false);
+            setTimeout(() => {
+                this.$store.setLoading(false);
+            }, 3000);
         },
         renderChart() {
             if (!this.$refs.chartContainer || !this.chartData) return;
@@ -75,7 +77,7 @@ export default {
 <style>
 .echarts-chart {
     width: 100%;
-    height: 450px;
+    height: 400px;
     padding: 10px;
 }
 </style>
