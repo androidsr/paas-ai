@@ -19,6 +19,8 @@
 <script>
 import Chart from "@/components/Chart.vue";
 import MermaidChat from "@/components/MermaidChat.vue";
+import chartPlugin from "@/components/markdown-plugin/ChartPlugin.js";
+import mermaidPlugin from "@/components/markdown-plugin/MermaidPlugin.js";
 
 import MdContent from "@/components/MdContent.vue";
 import Clipboard from 'clipboard';
@@ -81,7 +83,7 @@ export default defineComponent({
                 xhtmlOut: true,
                 typographer: true,
                 highlight: this.highlightCode,
-            }).use(mila, { attrs: { target: "_blank", rel: "noopener" } }),
+            }).use(chartPlugin).use(mermaidPlugin).use(mila, { attrs: { target: "_blank", rel: "noopener" } }),
         };
     },
     methods: {
@@ -119,7 +121,10 @@ export default defineComponent({
         },
 
         highlightCode(str, lang) {
-            if (lang === "chart") {
+            if (lang === "chart" || lang === 'mermaid') {
+                return '加载中...';
+            }
+            /* if (lang === "chart") {
                 try {
                     const data = JSON.parse(str);
                     const chartId = `chart-${this.messages.length}`;
@@ -131,7 +136,7 @@ export default defineComponent({
                 const chartId = `mermaid-${this.messages.length}`;
                 const data = encodeURIComponent(str);
                 return `<div class="mermaid-container" data-chart-id="${chartId}" data-chart-data="${data}"></div>`;
-            }
+            } */
 
             let codeId = `code-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
             let copyButton = `<a class="copy-btn" style="float:right; cursor:pointer;" data-clipboard-action="copy" data-clipboard-target="#${codeId}">复制</a>`;
@@ -173,11 +178,11 @@ export default defineComponent({
 
                 messageContainers.forEach((container) => {
                     container.querySelectorAll('.chart-container').forEach((el) => {
-                        const chartData = JSON.parse(el.dataset.chartData);
-                        const chartId = el.dataset.chartId;///"chart-" + this.messages.length;
+                        const chartData = decodeURIComponent(el.dataset.chartData || '');
+                        const chartId = el.id;
                         const existingChart = this.$refs[chartId];
                         if (existingChart && existingChart.chartId == chartId) {
-                            return; // 数据未变化，不重新渲染
+                            return;
                         }
                         const chartContainer = document.createElement('div');
                         el.replaceWith(chartContainer);
@@ -199,8 +204,8 @@ export default defineComponent({
                     });
 
                     container.querySelectorAll('.mermaid-container').forEach((el) => {
-                        const chartData = el.dataset.chartData;
-                        const chartId = el.dataset.chartId;
+                        const chartData = decodeURIComponent(el.dataset.chartData || '');
+                        const chartId = el.id;
                         const existingChart = this.$refs[chartId];
                         if (existingChart && existingChart.chartId == chartId) {
                             return;
@@ -215,6 +220,7 @@ export default defineComponent({
                         this.$nextTick(() => {
                             const chartVNode = h(MermaidChat, {
                                 chartData,
+                                chartId,
                                 key: chartId,  // 使用 chartId 作为 key 来保证更新时唯一性
                                 ref: chartId,  // 给每个图表元素加一个 ref 用来缓存
                             });

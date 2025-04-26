@@ -3,6 +3,9 @@
         <div class="mermaid-container" @click="openModal">
             <div class="mermaid" v-html="svgContent" />
         </div>
+        <a-flex align="center" justify="center"><a-button type="link" @click="changeChart"
+                :disabled="$store.loading">更换图表</a-button></a-flex>
+
         <a-modal v-model:open="showModal" title="Mermaid 预览" width="90%" :footer="null" centered @cancel="closeModal">
             <div class="zoom-wrapper">
                 <div ref="zoomContainer" class="zoom-inner" v-html="svgContent" />
@@ -22,6 +25,10 @@ export default {
             type: String,
             required: true,
         },
+        chartId: {
+            type: String,
+            required: true,
+        }
     },
     data() {
         return {
@@ -41,8 +48,9 @@ export default {
     },
     methods: {
         changeChart() {
+            this.$store.setLoading(false);
             this.$store.setLoading(true);
-            let message = "这是一个mermaid图表的配置数据,请给我更新一种展现方式,并使用md代码块输出，语言类型为：mermaid。\n不要输出额外的信息。 图表数据：" + this.data;
+            let message = "这是一个mermaid图表的配置数据,请给我更新一种展现方式,不能改变我的数据内容。并使用md代码块输出，语言类型为：mermaid。\n不要输出额外的信息。 图表数据：" + this.data;
             this.$bus.emit("changeChart", message);
             setTimeout(() => {
                 this.$store.setLoading(false);
@@ -70,16 +78,30 @@ export default {
             }
         },
         async renderMermaid() {
-            if (!this.chartData) return;
-
+            if (!this.chartData) {
+                this.svgContent = '';
+                return;
+            }
+            console.log(this.chartId)
             try {
-                mermaid.initialize({ startOnLoad: false, theme: 'default' });
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    logLevel: 'fatal'
+                });
                 this.data = decodeURIComponent(this.chartData);
-                const { svg } = await mermaid.render(`mermaid-${Date.now()}`, this.data);
+                mermaid.parse(this.data);
+                const { svg } = await mermaid.render(this.chartId, this.data);
                 this.svgContent = svg;
+
+                const tempDiv = document.getElementById(`d${this.chartId}`);
+                if (tempDiv) tempDiv.remove();
             } catch (e) {
-                //console.error('Mermaid 渲染失败:', e);
-                //this.svgContent = `<pre style="color: red;">Mermaid 渲染失败：${e.message}</pre>`;
+                this.svgContent = '';
+                const nodes = document.querySelectorAll(`body > div[id^="d${this.chartId}"]`);
+                nodes.forEach(el => el.remove());
+                console.warn('Mermaid 语法错误，已跳过渲染：', e.message);
             }
         },
     },
@@ -88,6 +110,11 @@ export default {
 </script>
 
 <style scoped>
+.mermaid-container svg:has(.error-icon),
+.mermaid-container svg:has(.error-text) {
+    display: none;
+}
+
 .mermaid-container {
     width: 100%;
     overflow-x: auto;

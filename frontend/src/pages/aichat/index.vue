@@ -32,6 +32,9 @@
               <a-button size="small" @click="clean" title="清空对话">
                 <ClearOutlined />
               </a-button>
+              <a-button size="small" @click="reloadPage" title="刷新">
+                <RedoOutlined />
+              </a-button>
               <a-popover placement="rightBottom" trigger="click">
                 <template #content>
                   <div>
@@ -189,7 +192,7 @@ export default {
     });
     this.getImage();
     window.addEventListener('resize', this.handleResize)
-    this.$store.bus.on("changeChart", (data) => {
+    this.$bus.on("changeChart", (data) => {
       message.info("生成中...");
       const oldSystem = this.system;
       this.system = data;
@@ -205,7 +208,7 @@ export default {
     });
   },
   beforeUnmount() {
-    this.$store.bus.off('changeChart');
+    this.$bus.off('changeChart');
   },
   data() {
     return {
@@ -288,6 +291,9 @@ export default {
     }
   },
   methods: {
+    reloadPage() {
+      window.location.reload();
+    },
     settingOk() {
       //this.showSetting = false;
       var sendData = {
