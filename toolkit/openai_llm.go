@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
@@ -46,54 +47,107 @@ func (m *OpenAI) RemoveContent(index int) {
 		m.content = append(m.content[:index], m.content[index+1:]...)
 	}
 }
-func (m *OpenAI) GenerateFunction(ctx context.Context, toolsContent string, funcCallback func(fun *llms.FunctionCall) (bool, string, error), callback func(ctx context.Context, chunk []byte) error, options ...llms.CallOption) (string, error) {
+
+func (m *OpenAI) GenerateFunction(ctx context.Context, toolsContent string,
+	funcCallback func(fun *llms.FunctionCall) (bool, string, error), callback func(ctx context.Context, chunk []byte) error, options ...llms.CallOption) (string, error) {
+	// 加载 tools
 	if toolsContent != "" {
-		tools := make([]llms.Tool, 0)
-		err := json.Unmarshal([]byte(toolsContent), &tools)
-		if err != nil {
+		var tools []llms.Tool
+		if err := json.Unmarshal([]byte(toolsContent), &tools); err != nil {
 			log.Printf("函数定义错误：%v\n", err)
 			return "", err
 		}
 		options = append(options, llms.WithTools(tools))
 	}
+
 	log.Printf("提示词：%s\n", m.content)
-	var funcResult string
-	var isAi bool
+	resultList := make([]string, 0)
+
 	for {
 		resp, err := m.llm.GenerateContent(ctx, m.content, options...)
 		if err != nil {
 			return "", err
 		}
-		choice1 := resp.Choices[0]
-		if choice1.FuncCall == nil {
+
+		choice := resp.Choices[0]
+		if len(choice.ToolCalls) == 0 {
+			// 无函数调用
 			if callback == nil {
-				return choice1.Content, nil
+				resultList = append(resultList, choice.Content)
+				return strings.Join(resultList, " "), nil
 			}
 			return "", nil
-		} else {
-			toolCall := choice1.ToolCalls[0]
-			log.Printf("执行函数：%s; 输入参数：%s\n\n", choice1.FuncCall.Name, choice1.FuncCall.Arguments)
-			isAi, funcResult, err = funcCallback(choice1.FuncCall)
+		}
+
+		var (
+			successParts []llms.ContentPart
+			errorParts   []llms.ContentPart
+		)
+
+		for _, toolCall := range choice.ToolCalls {
+			log.Printf("执行函数：%s; 输入参数：%s\n", toolCall.FunctionCall.Name, toolCall.FunctionCall.Arguments)
+
+			isAi, funcResult, err := funcCallback(&llms.FunctionCall{
+				Name:      toolCall.FunctionCall.Name,
+				Arguments: toolCall.FunctionCall.Arguments,
+			})
+
 			if err != nil {
 				if !isAi {
 					return "", err
 				}
 				log.Printf("执行函数失败：%s\n", err.Error())
-				contentPart := []llms.ContentPart{llms.ToolCallResponse{ToolCallID: toolCall.ID, Name: choice1.FuncCall.Name, Content: err.Error()}}
-				m.content = append(m.content, llms.MessageContent{Role: llms.ChatMessageTypeTool, Parts: contentPart})
+				errorParts = append(errorParts, llms.ToolCallResponse{
+					ToolCallID: toolCall.ID,
+					Name:       toolCall.FunctionCall.Name,
+					Content:    err.Error(),
+				})
 			} else {
-				if callback != nil {
-					options = append(options, llms.WithStreamingFunc(callback))
-				}
-				if funcResult == "" || !isAi {
-					break
-				}
-				contentPart := []llms.ContentPart{llms.ToolCallResponse{ToolCallID: toolCall.ID, Name: choice1.FuncCall.Name, Content: funcResult}}
-				m.content = append(m.content, llms.MessageContent{Role: llms.ChatMessageTypeTool, Parts: contentPart})
+				// 保存每个函数调用的返回内容
+				resultList = append(resultList, funcResult)
+				successParts = append(successParts, llms.ToolCallResponse{
+					ToolCallID: toolCall.ID,
+					Name:       toolCall.FunctionCall.Name,
+					Content:    funcResult,
+				})
 			}
 		}
+
+		// 返回所有成功/失败内容
+		if len(errorParts) > 0 {
+			m.content = append(m.content, llms.MessageContent{
+				Role:  llms.ChatMessageTypeTool,
+				Parts: errorParts,
+			})
+			continue
+		}
+
+		// 避免重复添加 callback
+		if callback != nil {
+			cbOption := llms.WithStreamingFunc(callback)
+			if !containsOption(options, cbOption) {
+				options = append(options, cbOption)
+			}
+		}
+
+		m.content = append(m.content, llms.MessageContent{
+			Role:  llms.ChatMessageTypeTool,
+			Parts: successParts,
+		})
+
+		break
 	}
-	return funcResult, nil
+
+	return strings.Join(resultList, " "), nil
+}
+
+func containsOption(options []llms.CallOption, target llms.CallOption) bool {
+	for _, opt := range options {
+		if fmt.Sprintf("%v", opt) == fmt.Sprintf("%v", target) {
+			return true
+		}
+	}
+	return false
 }
 
 /** 调用模型生成结果；异步回调 **/

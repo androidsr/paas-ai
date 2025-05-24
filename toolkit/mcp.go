@@ -44,6 +44,7 @@ func GetToolsContent(mType int, command string) (client.MCPClient, string) {
 		return nil, ""
 	}
 	tools := make([]llms.Tool, 0)
+	fmt.Println(funcList)
 	for _, f := range funcList {
 		tools = append(tools, llms.Tool{Type: "function", Function: f})
 	}
@@ -55,6 +56,7 @@ func GetToolsContent(mType int, command string) (client.MCPClient, string) {
 }
 
 func ExecTools(cli client.MCPClient, name string, arguments string) (bool, string, error) {
+	fmt.Println("接收到的参数信息：", name, arguments)
 	args := make(map[string]any, 0)
 	err := json.Unmarshal([]byte(arguments), &args)
 	if err != nil {
