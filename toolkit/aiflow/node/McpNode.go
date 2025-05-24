@@ -56,7 +56,7 @@ func (m *McpNode) Execute(input map[string]any, output map[string]any, emitter c
 		utils.InputPrint(emitter, m.properties.Name, string(bs))
 	}
 	cli, toolContent := toolkit.GetToolsContent(m.properties.McpType, m.properties.Command)
-
+	defer cli.Close()
 	data, err := llm.GenerateFunction(context.Background(), toolContent, func(fun *llms.FunctionCall) (bool, string, error) {
 		return toolkit.ExecTools(cli, fun.Name, fun.Arguments)
 	}, nil)
